@@ -1,0 +1,62 @@
+body {
+    margin : 15px;
+}
+
+h1 {
+    text-align: left;
+}
+
+form {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#search {
+    display: flex;
+    justify-content: space-around;
+}
+
+
+
+#game_header {
+    background-color: yellowgreen;
+    background-color: black;
+}
+
+#game {
+    padding :0px;
+    display: flex;
+    justify-content: center;
+}
+
+#logo {
+    width:554px;
+    height:186px;
+    background:black url(pacman10-hp.png) 0 0 no-repeat;
+    position:relative;
+    margin-bottom:9px;
+}
+
+#insert_coin_div {
+    color : red;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 30px;
+}
+
+#insert_coin {
+    background-color: transparent;
+    border : 6px solid transparent;
+    color : #001aff;
+    border-radius :15px;
+    padding : 15px 25px;
+    cursor : pointer;
+    font-weight : bold;
+}
+
+#insert_coin:hover {
+    border : 6px solid #001aff;
+    border-style : double;
+    filter : drop-shadow(0 0 15px #001aff) drop-shadow(0 0 50px #001aff) contrast(2) brightness(2);
+}
