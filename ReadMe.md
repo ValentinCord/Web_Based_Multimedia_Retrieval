@@ -17,10 +17,10 @@ sudo usermod -aG docker [USER_NAME]
 # **Virtual Environment Setup**
 ```console
 sudo apt-get install -y python3-venv
-python3 -m venv flask_env
-source flask_env/bin/activate
+python3 -m venv env
+source env/bin/activate
 pip install flask
-python3 freeze > requirements.txt
+python -m pip freeze > requirements.txt
 ```
 
 # **Build Docker**
