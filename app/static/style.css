@@ -1,23 +1,12 @@
-body {
-    margin : 15px;
+* {
+    font-family: 'Courier New', Courier, monospace;
 }
 
-h1 {
-    text-align: left;
-}
-
-form {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-}
 
 #search {
     display: flex;
     justify-content: space-around;
 }
-
-
 
 #game_header {
     background-color: yellowgreen;

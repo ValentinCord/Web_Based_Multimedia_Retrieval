@@ -355,56 +355,96 @@
         <div id = c1>
             <h1>Configuration</h1>
 
-            <form action = "" method = "POST" enctype="multipart/form-data">
-
-                <div id = input_file_query>
-                    <label class = query> Select a file : </label>
-                    <input type = "file" name = "input_file" accept = ".png, .jpeg, .jpg">
+            <form method="POST">
+                <legend>Select descriptors :</legend>
+        
+                <div>
+                    <input type="checkbox" value="SIFT" name="SIFT" />
+                    <label for="SIFT">SIFT</label>
                 </div>
-
-                <div id = top_query>
-                    <label class = query> Top : </label>
-                    <input type = "number" name = "top">
+        
+                <div>
+                    <input type="checkbox" value="BGR" name="BGR"/>
+                    <label for="BGR">BGR</label>
                 </div>
-
-                <div id = boxes>
-                    <label class = query> Descriptors : </label>
-
-                    <label class = sub_desc> Shape : </label>
-                    <div>
-                        <input type="checkbox" name="rgb_hist">
-                        <label>Color histogram</label>
-                    </div>
-                    <div>
-                        <input type="checkbox" name="hsv_hist">
-                        <label>HSV histogram</label>
-                    </div>
-
-                    <label> Form : </label>
-                    <div>
-                        <input type="checkbox" name="ORB">
-                        <label>ORB</label>
-                    </div>
-                    <div>
-                        <input type="checkbox" name="SIFT">
-                        <label>SIFT</label>
-                    </div>
-
-                    <label> Texture : </label>
-                    <div>
-                        <input type="checkbox" name="VGG16">
-                        <label>VGG19</label>
-                    </div>
-                    <div>
-                        <input type="checkbox" name="RESNet50">
-                        <label>RESNet50</label>
-                    </div>
+        
+                <div>
+                    <input type="checkbox" value="GLCM" name="GLCM"/>
+                    <label for="GLCM">GLCM</label>
                 </div>
+        
+                <div>
+                    <input type="checkbox" value="HOG" name="HOG" />
+                    <label for="HOG">HOG</label>
+                </div>
+        
+                <div>
+                    <input type="checkbox" value="HSV" name="HSV" />
+                    <label for="HSV">HSV</label>
+                </div>
+        
+                <div>
+                    <input type="checkbox" value="LBP" name="LBP" />
+                    <label for="LBP">LBP</label>
+                </div>
+        
+                <div>
+                    <input type="checkbox" value="ORB" name="ORB" />
+                    <label for="ORB">ORB</label>
+                </div>
+        
+                <div>
+                    <input type="checkbox" value="DL" name="DL" />
+                    <label for="DL">Deep Learning</label>
+                </div>
+                <br>
 
-                <input type = "submit" name = 'submit_search' value = "Search">
-    
+                <legend>Slect distance :</legend>
+
+                <br/>
+        
+                <select name="distance" >
+                    <option disabled selected value> -- Select -- </option>
+                    <option>Euclidienne</option>
+                    <option>Corrélation</option>
+                    <option>Chi-square</option>
+                    <option>Bhattcharyya</option>
+                    <option>Brute Force Matcher</option>
+                    <option>Flann</option>
+                </select>
+
+                <br>
+
+                <legend>Submit</legend>
+                <input type="submit" name = 'form1'value="Envoyer"/>
+
+                <br/>
+        
             </form>
-        </div>
+        
+            <h2>Test avec une nouvelle image</h2>
+
+            <form method= "POST" enctype=multipart/form-data>
+                <input type=file name=file>
+                <input type=submit name='form2' value="Envoyer">
+            </form>
+            
+        
+            <h2>Affichage</h2>
+            <button type="button">Affichage top 20</button>
+
+            <br>
+
+            <button type="button">Affichage top 50</button>
+
+            <br>
+
+            <button type ="button">Affichage des métriques</button>
+
+            <br/>
+            <br/>
+
+            </div>
 
         <!-- Column 2-->
         <div id = c2>
