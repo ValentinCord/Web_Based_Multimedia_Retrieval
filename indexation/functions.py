@@ -5,7 +5,7 @@ from skimage import  img_as_ubyte
 from skimage.feature import graycomatrix, graycoprops, local_binary_pattern
 
 def status_log(function, folder):
-    print("[INFO] Indexation :" + function.__name__ + " of " + folder + " --> Done")
+    print("[INFO] Indexation : " + function.__name__ + " of " + folder + " --> Done")
 
 def create_folder(folder):
     if not os.path.isdir(os.path.join("index",folder)):

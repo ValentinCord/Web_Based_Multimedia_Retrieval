@@ -1,11 +1,45 @@
 * {
     font-family: 'Courier New', Courier, monospace;
+    padding : 0;
+    margin : 0;
+}
+
+h1 {
+    filter : drop-shadow(0 0 15px #ff0000) drop-shadow(0 0 50px #ff0000) contrast(2) brightness(2);
+    color : red;
+    margin-top : 40px;
+}
+
+#result h1 {
+    text-align: center;
+}
+
+body {
+    display: block;
+    color : white;
 }
 
 
 #search {
     display: flex;
     justify-content: space-around;
+    background-color: rgb(0, 0, 0);
+}
+
+#result {
+    background-color: rgb(0, 0, 0);
+    display: flex;
+    flex-direction: column;
+}
+
+.grid {
+    background-color: black;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+}
+
+.grid_img {
+    background-color: black;
 }
 
 #game_header {
@@ -42,10 +76,26 @@
     padding : 15px 25px;
     cursor : pointer;
     font-weight : bold;
+    border : 6px solid #001aff;
+    border-style : double;
 }
 
 #insert_coin:hover {
+    filter : drop-shadow(0 0 15px #001aff) drop-shadow(0 0 50px #001aff) contrast(2) brightness(2);
+}
+
+.retro_btn {
+    background-color: transparent;
+    border : 6px solid transparent;
+    color : #001aff;
+    border-radius :15px;
+    padding : 15px 25px;
+    cursor : pointer;
+    font-weight : bold;
     border : 6px solid #001aff;
     border-style : double;
+}
+
+.retro_btn:hover {
     filter : drop-shadow(0 0 15px #001aff) drop-shadow(0 0 50px #001aff) contrast(2) brightness(2);
 }
