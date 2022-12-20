@@ -1,7 +1,5 @@
 * {
     font-family: 'Courier New', Courier, monospace;
-    padding : 0;
-    margin : 0;
 }
 
 h1 {
@@ -10,36 +8,38 @@ h1 {
     margin-top : 40px;
 }
 
+h2 {
+    filter : drop-shadow(0 0 15px #7bff00) drop-shadow(0 0 50px #7bff00) contrast(2) brightness(2);
+    color : #7bff00;
+    margin-top : 20px;
+}
+
+h3 {
+    filter : drop-shadow(0 0 15px #ff00bf) drop-shadow(0 0 50px #ff00bf) contrast(2) brightness(2);
+    color : #ff00bf;
+    margin-top : 10px;
+}
+
 #result h1 {
     text-align: center;
 }
 
 body {
-    display: block;
     color : white;
+    background-color: black;
 }
-
 
 #search {
     display: flex;
     justify-content: space-around;
-    background-color: rgb(0, 0, 0);
-}
-
-#result {
-    background-color: rgb(0, 0, 0);
-    display: flex;
-    flex-direction: column;
 }
 
 .grid {
-    background-color: black;
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    display: flex;
 }
 
-.grid_img {
-    background-color: black;
+.grid-item {
+    height : 200px;
 }
 
 #game_header {

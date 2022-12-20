@@ -353,106 +353,75 @@
             <h1>Configuration</h1>
 
             <form method="POST">
-                <legend>Select descriptors :</legend>
-        
-                <div>
-                    <input type="checkbox" value="SIFT" name="SIFT" />
-                    <label for="SIFT">SIFT</label>
-                </div>
-        
-                <div>
-                    <input type="checkbox" value="BGR" name="BGR"/>
-                    <label for="BGR">BGR</label>
-                </div>
-        
-                <div>
-                    <input type="checkbox" value="GLCM" name="GLCM"/>
-                    <label for="GLCM">GLCM</label>
-                </div>
-        
-                <div>
-                    <input type="checkbox" value="HOG" name="HOG" />
-                    <label for="HOG">HOG</label>
-                </div>
-        
-                <div>
-                    <input type="checkbox" value="HSV" name="HSV" />
-                    <label for="HSV">HSV</label>
-                </div>
-        
-                <div>
-                    <input type="checkbox" value="LBP" name="LBP" />
-                    <label for="LBP">LBP</label>
-                </div>
-        
-                <div>
-                    <input type="checkbox" value="ORB" name="ORB" />
-                    <label for="ORB">ORB</label>
-                </div>
-        
-                <div>
-                    <input type="checkbox" value="DL" name="DL" />
-                    <label for="DL">Deep Learning</label>
-                </div>
+                <h2>Select descriptors :</h2>
+                <div><input type="checkbox" name="SIFT"/><label>SIFT</label></div>
+                <div><input type="checkbox" name="BGR"/><label>BGR</label></div>
+                <div><input type="checkbox" name="GLCM"/><label>GLCM</label></div>
+                <div><input type="checkbox" name="HOG" /><label>HOG</label></div>
+                <div><input type="checkbox" name="HSV" /><label>HSV</label></div>
+                <div><input type="checkbox" name="LBP" /><label>LBP</label></div>
+                <div><input type="checkbox" name="ORB" /><label>ORB</label></div>
+                <div><input type="checkbox" value="DL" name="DL" /><label>Deep Learning</label></div>
 
-                <br>
-
-                <legend>Select distance :</legend>
+                <h2>Select distance</h2>
                 <select name="distance" >
-                    <option disabled selected value> -- Select -- </option>
-                    <option>Euclidienne</option>
-                    <option>Corrélation</option>
-                    <option>Chi-square</option>
-                    <option>Bhattcharyya</option>
-                    <option>Brute Force Matcher</option>
-                    <option>Flann</option>
+                    <option disabled selected value> Select </option>
+                    <option value = 'euclidean'>Euclidienne</option>
+                    <option value = 'correlation'>Corrélation</option>
+                    <option value = 'interesection'>Corrélation</option>
+                    <option value = 'chiSquareDistance'>Chi-square</option>
+                    <option value = 'bhatta'>Bhattcharyya</option>
+                    <option value = 'bruteForceMatching'>Brute Force Matcher</option>
+                    <option value = 'flann'>Flann</option>
                 </select>
 
-                <br>
-                <br>
-
-                <input class = retro_btn type="submit" name = 'form1'value="Submit"/>
-
-                <br>
-        
+                <input class = retro_btn type="submit" name = 'form_config' value="Submit"/>
             </form>
         
             <h1>Test avec une nouvelle image</h1>
-
             <form method= "POST" enctype=multipart/form-data>
                 <input type=file name=file>
-                <input class = retro_btn type=submit name='form2' value="Submit">
+                <input class = retro_btn type=submit name='form_input_image' value="Submit">
             </form>
             
-        
+            <h1>Indexation de l'image d'input</h1>
+            <form method = 'POST'><input type = submit name = 'form_search' value = 'Indexation'></form>
+
             <h1>Affichage</h1>
-            <button type="button">Affichage top 20</button>
-
-            <br>
-
-            <button type="button">Affichage top 50</button>
-
-            <br>
-
-            <button type ="button">Affichage des métriques</button>
-
-            <br/>
-            <br/>
-
-            </div>
+            <form method = 'POST'><input type = submit name = 'form_top_20' value = 'Afficher top 20'></form>
+            <form method = 'POST'><input type = submit name = 'form_top_50' value = 'Afficher top 50'></form>
+            <form method = 'POST'><input type = submit name = 'form_rp'     value = 'Afficher courbe RP'></form>
+        </div>
 
         <!-- Column 2-->
         <div id = c2>
             <h1>Summary</h1>
-
-            {% for k,v in cfg.items() if (v is not none and k != 'result') %}
-                {{ v }}
+            <h2>Descriptors</h2>
+            {% for k,v in cfg['descriptors'].items() %}
+                {{ k }} : {{ v }}
+                <br>
+            {% endfor %}
+            <h2>Distance</h2>
+            {% for k,v in cfg['distance'].items() %}
+                {{ k }} : {{ v }}
+                <br>
+            {% endfor %}
+            <h2>Input</h2>
+            {% for k,v in cfg['input'].items() %}
+                {{ k }} : {{ v }}
                 <br>
             {% endfor %}
 
-            {% if cfg['img_url'] %}
-                <img src = {{ cfg['img_url'] }} height="200" > 
+            {% if cfg['input']['img_path'] %}
+                <img src = {{ cfg['input']['img_path'] }} height="200" > 
             {%endif%}
+
+            <h1>Warning</h1>
+            <div>
+                {% for mesg in get_flashed_messages() %}
+                    <h3>{{ mesg }}</h3>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
@@ -460,13 +429,21 @@
     <div id = 'result'>
         <h1>Result</h1>
 
+        {% if cfg['aff_20'] %}
         </div class = grid>
-            {% for v in cfg['result'] %}
-                <img class = grid_img src = {{ v }}>
+            {% for v in cfg['result']['names'][:20] %}
+                <img class = grid-item src = {{ v[0] }}>
             {% endfor %}
         </div>
 
+        {% elif cfg['aff_50'] %}
+        </div class = grid>
+            {% for v in cfg['result']['names'][:50] %}
+                <img class = grid-item src = {{ v[0] }}>
+            {% endfor %}
+        </div>
 
+        {% endif %}
     </div>
 
   </body>
