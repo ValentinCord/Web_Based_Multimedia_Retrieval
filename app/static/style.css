@@ -34,12 +34,18 @@ body {
     justify-content: space-around;
 }
 
+
 .grid {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
 }
 
-.grid-item {
-    height : 200px;
+.item {
+    height: 200px;
+    margin: 10px
 }
 
 #game_header {
