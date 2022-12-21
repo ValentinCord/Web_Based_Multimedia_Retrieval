@@ -1,4 +1,5 @@
 index/
+data_import/
 .DS_Store
 .env
 .flaskenv

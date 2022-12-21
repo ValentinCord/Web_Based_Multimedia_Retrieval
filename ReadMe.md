@@ -32,3 +32,8 @@ docker build -t [IMAGE_NAME] .
 ```console
 docker run -p 5000:5000 [IMAGE_NAME]
 ```
+
+# **Clean Docker**
+```console
+docker system prune -a
+```

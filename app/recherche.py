@@ -79,12 +79,12 @@ def extractReqFeatures(fileName, algo_choice):
         elif algo_choice == 'GLCM': 
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             glcm = graycomatrix(img, distances=[1, -1], angles=[0, np.pi/4, np.pi/2, 3*np.pi/4], normed=True)
-            glcmProperties1 = graycomatrix(glcm,'contrast').ravel()
-            glcmProperties2 = graycomatrix(glcm,'dissimilarity').ravel()
-            glcmProperties3 = graycomatrix(glcm,'homogeneity').ravel()
-            glcmProperties4 = graycomatrix(glcm,'energy').ravel()
-            glcmProperties5 = graycomatrix(glcm,'correlation').ravel()
-            glcmProperties6 = graycomatrix(glcm,'ASM').ravel()
+            glcmProperties1 = graycoprops(glcm,'contrast').ravel()
+            glcmProperties2 = graycoprops(glcm,'dissimilarity').ravel()
+            glcmProperties3 = graycoprops(glcm,'homogeneity').ravel()
+            glcmProperties4 = graycoprops(glcm,'energy').ravel()
+            glcmProperties5 = graycoprops(glcm,'correlation').ravel()
+            glcmProperties6 = graycoprops(glcm,'ASM').ravel()
             return np.array([glcmProperties1,
                                         glcmProperties2,
                                         glcmProperties3,

@@ -7,15 +7,13 @@ from werkzeug.utils import secure_filename
 from time import time
 from recherche import *
 
-client = MongoClient('localhost', 27017, username = 'admin', password = 'admin')
-
-# db = client.flask_db
-# cfg = db.cfg
-# cfg.insert_one()
+# client = MongoClient('localhost', 27017, username = 'admin', password = 'admin')
+# db = client.db # database
+# index = db.index # collection
 
 app = Flask(__name__)
 
-app.secret_key = "mykey"
+app.secret_key = 'mykey'
 
 cfg = {
     'descriptors' : {},
@@ -26,17 +24,14 @@ cfg = {
 }
 
 @app.route("/", methods = ['GET', 'POST'])
-def index():
+def main():
 
-    if request.method == "POST" and "form_config" in request.form:
+    if request.method == 'POST' and 'form_config' in request.form:
         get_descriptor_form()
         get_distance_form()
-        redirect(url_for('index'))
 
     if request.method == 'POST' and "form_input_image" in request.form:
         get_input_form()
-        redirect(url_for('index'))
-
 
     if request.method == 'POST' and "form_search" in request.form:
         img_path = cfg['input']['img_path']
@@ -49,25 +44,21 @@ def index():
         cfg['result']['time'] = round(time() - start, 3)
         cfg['result']['names'] = result
         cfg['result']['done'] = True
-        redirect(url_for('index'))
 
     if request.method == 'POST' and "form_top_20" in request.form:
         cfg['show']['20'] = True
         cfg['show']['50'] = False
         cfg['show']['rp'] = False
-        redirect(url_for('index'))
 
     if request.method == 'POST' and "form_top_50" in request.form:
         cfg['show']['20'] = False
         cfg['show']['50'] = True
         cfg['show']['rp'] = False
-        redirect(url_for('index'))
 
     if request.method == 'POST' and "form_rp" in request.form:
         cfg['show']['20'] = False
         cfg['show']['50'] = False
         cfg['show']['rp'] = True
-        redirect(url_for('index'))
 
     return render_template("index.html", cfg = cfg)
 
