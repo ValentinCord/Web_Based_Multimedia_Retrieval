@@ -167,11 +167,11 @@ def recherche(img_path, descriptors, distance):
 
 def rappel_precision():
 
-    rappel_precision=[]
-    rappels=[]
-    precisions=[]
+    rappel_precision = []
+    rappels = []
+    precisions = []
 
-    filename_req=os.path.basename(fileName)
+    filename_req = os.path.basename(fileName)
     num_image, _ = filename_req.split(".")
     classe_image_requete = int(num_image)/100
     val = 0

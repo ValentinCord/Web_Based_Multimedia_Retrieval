@@ -1,19 +1,28 @@
 import os
 
 from flask import Flask, render_template, request, redirect, url_for, flash
+from pymongo import MongoClient
+
 from werkzeug.utils import secure_filename
 from time import time
 from recherche import *
 
+client = MongoClient('localhost', 27017, username = 'admin', password = 'admin')
+
+# db = client.flask_db
+# cfg = db.cfg
+# cfg.insert_one()
+
 app = Flask(__name__)
 
-app.secret_key = "super secret key"
+app.secret_key = "mykey"
 
 cfg = {
     'descriptors' : {},
     'distance' : {},
     'input' : {},
-    'result' : {}
+    'result' : {},
+    'show' : {}
 }
 
 @app.route("/", methods = ['GET', 'POST'])
@@ -22,9 +31,12 @@ def index():
     if request.method == "POST" and "form_config" in request.form:
         get_descriptor_form()
         get_distance_form()
+        redirect(url_for('index'))
 
     if request.method == 'POST' and "form_input_image" in request.form:
         get_input_form()
+        redirect(url_for('index'))
+
 
     if request.method == 'POST' and "form_search" in request.form:
         img_path = cfg['input']['img_path']
@@ -33,40 +45,47 @@ def index():
 
         start = time()
         result = recherche(img_path, descriptors, distance)
-        print(result)
 
         cfg['result']['time'] = round(time() - start, 3)
         cfg['result']['names'] = result
-
+        cfg['result']['done'] = True
+        redirect(url_for('index'))
 
     if request.method == 'POST' and "form_top_20" in request.form:
-        cfg['aff_20'] = True
-        cfg['aff_50'] = False
+        cfg['show']['20'] = True
+        cfg['show']['50'] = False
+        cfg['show']['rp'] = False
+        redirect(url_for('index'))
 
     if request.method == 'POST' and "form_top_50" in request.form:
-        cfg['aff_20'] = False
-        cfg['aff_50'] = True
+        cfg['show']['20'] = False
+        cfg['show']['50'] = True
+        cfg['show']['rp'] = False
+        redirect(url_for('index'))
 
     if request.method == 'POST' and "form_rp" in request.form:
-        pass
+        cfg['show']['20'] = False
+        cfg['show']['50'] = False
+        cfg['show']['rp'] = True
+        redirect(url_for('index'))
 
     return render_template("index.html", cfg = cfg)
 
 def get_descriptor_form():
-        cfg['descriptors']['is_selected'] = False
-        cfg['descriptors']['SIFT'] = True if request.form.get('SIFT') != None else False
-        cfg['descriptors']['BGR']  = True if request.form.get('BGR')  != None else False
-        cfg['descriptors']['GLCM'] = True if request.form.get('GLCM') != None else False
-        cfg['descriptors']['HOG']  = True if request.form.get('HOG')  != None else False
-        cfg['descriptors']['HSV']  = True if request.form.get('HSV')  != None else False
-        cfg['descriptors']['LBP']  = True if request.form.get('LBP')  != None else False
-        cfg['descriptors']['ORB']  = True if request.form.get('ORB')  != None else False
-        cfg['descriptors']['DL']   = True if request.form.get('DL')   != None else False
-        cfg['descriptors']['is_selected'] = any(cfg['descriptors'].values())
+    cfg['descriptors']['is_selected'] = False
+    cfg['descriptors']['SIFT'] = True if request.form.get('SIFT') != None else False
+    cfg['descriptors']['BGR']  = True if request.form.get('BGR')  != None else False
+    cfg['descriptors']['GLCM'] = True if request.form.get('GLCM') != None else False
+    cfg['descriptors']['HOG']  = True if request.form.get('HOG')  != None else False
+    cfg['descriptors']['HSV']  = True if request.form.get('HSV')  != None else False
+    cfg['descriptors']['LBP']  = True if request.form.get('LBP')  != None else False
+    cfg['descriptors']['ORB']  = True if request.form.get('ORB')  != None else False
+    cfg['descriptors']['DL']   = True if request.form.get('DL')   != None else False
+    cfg['descriptors']['is_selected'] = any(cfg['descriptors'].values())
 
-        if not cfg['descriptors']['is_selected']:
-            flash('Pas de descripteur sélectionné')
-            return redirect(request.url)
+    if not cfg['descriptors']['is_selected']:
+        flash('Pas de descripteur sélectionné')
+        return redirect(request.url)
 
 def get_distance_form():
     cfg['distance']['is_selected'] = False

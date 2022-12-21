@@ -3,14 +3,21 @@
 }
 
 h1 {
-    filter : drop-shadow(0 0 15px #ff0000) drop-shadow(0 0 50px #ff0000) contrast(2) brightness(2);
-    color : red;
+    filter : drop-shadow(0 0 15px #ffffff) drop-shadow(0 0 50px #ffffff) contrast(2) brightness(2);
+    color : #ffffff;
     margin-top : 40px;
+    text-decoration-line: underline;
+    text-decoration-style: double;
+}
+
+.ko {
+    filter : drop-shadow(0 0 15px red) drop-shadow(0 0 50px red) contrast(2) brightness(2);
+    color : red;
 }
 
 h2 {
-    filter : drop-shadow(0 0 15px #7bff00) drop-shadow(0 0 50px #7bff00) contrast(2) brightness(2);
-    color : #7bff00;
+    filter : drop-shadow(0 0 15px #ffffff) drop-shadow(0 0 50px #ffffff) contrast(2) brightness(2);
+    color : #ffffff;
     margin-top : 20px;
 }
 
@@ -32,6 +39,7 @@ body {
 #search {
     display: flex;
     justify-content: space-around;
+    flex-wrap: wrap;
 }
 
 
@@ -46,6 +54,21 @@ body {
 .item {
     height: 200px;
     margin: 10px
+}
+
+#show {
+    display: flex;
+    justify-content: space-around;
+}
+
+#desc {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+#desc h3 {
+    margin-bottom: 5px;
 }
 
 #game_header {
@@ -84,6 +107,7 @@ body {
     font-weight : bold;
     border : 6px solid #001aff;
     border-style : double;
+    text-transform: uppercase;
 }
 
 #insert_coin:hover {
@@ -100,8 +124,14 @@ body {
     font-weight : bold;
     border : 6px solid #001aff;
     border-style : double;
+    text-transform: uppercase;
 }
 
 .retro_btn:hover {
     filter : drop-shadow(0 0 15px #001aff) drop-shadow(0 0 50px #001aff) contrast(2) brightness(2);
+}
+
+.large {
+    margin : 15px;
+    width : 100%;
 }
