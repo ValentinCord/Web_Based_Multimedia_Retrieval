@@ -1,19 +1,15 @@
 import os
 
-from flask import Flask, render_template, request, redirect, url_for, flash
-from pymongo import MongoClient
+from flask import Flask, render_template, request, redirect, flash
 
 from werkzeug.utils import secure_filename
 from time import time
+
 from recherche import *
-
-import json
-
-# client = MongoClient('localhost', 27017, username = 'admin', password = 'admin')
-# db = client.db # database
-# index = db.index # collection
+from mongo import Mongo
 
 app = Flask(__name__)
+mongo = Mongo()
 
 app.secret_key = 'mykey'
 
@@ -22,7 +18,9 @@ cfg = {
     'distance' : {},
     'input' : {},
     'result' : {},
-    'show' : {}
+    'show' : {},
+    'vector' : ['BGR', 'HSV', 'GLCM', 'HOG', 'LBP'],
+    'matrix' : ['SIFT', 'ORB']
 }
 
 @app.route("/", methods = ['GET', 'POST'])
@@ -41,7 +39,7 @@ def main():
         distance = cfg['distance']['name']
 
         start = time()
-        result = recherche(img_path, descriptors, distance)
+        result = recherche(mongo, img_path, descriptors, 'euclidean', 'flann', cfg)
 
         cfg['result']['time'] = round(time() - start, 3)
         cfg['result']['names'] = result
@@ -77,7 +75,7 @@ def get_descriptor_form():
     cfg['descriptors']['is_selected'] = any(cfg['descriptors'].values())
 
     if not cfg['descriptors']['is_selected']:
-        flash('Pas de descripteur sélectionné')
+        flash('[CONFIG] No Descriptor selected')
         return redirect(request.url)
 
 def get_distance_form():
@@ -86,7 +84,7 @@ def get_distance_form():
     cfg['distance']['is_selected'] = False if cfg['distance']['name'] is None else True
 
     if not cfg['distance']['is_selected']:
-        flash('Pas de distance sélectionnée')
+        flash('[CONFIG] No distance selected')
         return redirect(request.url)
 
 def get_input_form():
@@ -94,7 +92,7 @@ def get_input_form():
     cfg['input']['img_path'] = None
 
     if 'file' not in request.files:
-        flash('Pas de fichier')
+        flash('[FILE] No file selected')
         return redirect(request.url)
 
     file = request.files['file']
@@ -102,7 +100,7 @@ def get_input_form():
     allowed_file = '.' in filename and filename.rsplit('.', 1)[1].lower() in ['png', 'jpg', 'jpeg']
 
     if file.filename == '':
-        flash('Pas de fichier sélectionné')
+        flash('[FILE] No file selected')
         return redirect(request.url)
 
     elif allowed_file:
@@ -112,7 +110,7 @@ def get_input_form():
         cfg['input']['img_path'] = "static/img_loaded/" + file.filename
 
     else:
-        flash('Erreur: Format de fichier non accepté, veuillez mettre un png/jpg/jpeg')
+        flash('[FILE] Wrong file format')
   
 if __name__ == "__main__":
     app.run(debug=True)

@@ -4,4 +4,4 @@ COPY ./app /docker_app
 COPY requirements.txt /
 RUN pip install -r requirements.txt
 WORKDIR /docker_app
-CMD ["flask", "--app", "app", "run", "--host=0.0.0.0"]
+CMD ["flask", "--app", "app", "--debug", "run", "--host=0.0.0.0"]

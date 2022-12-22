@@ -51,7 +51,6 @@ def extractReqFeatures(fileName, algo_choice):
 
     if fileName : 
         img = cv2.imread(fileName)
-        # resized_img = resize(img, (128*4, 64*4)) ?????????????????????????????????????????
             
         if algo_choice == 'BGR':
             histB = cv2.calcHist([img],[0],None,[256],[0,256])
@@ -119,51 +118,73 @@ def extractReqFeatures(fileName, algo_choice):
             hog = cv2.HOGDescriptor(winSize,blockSize,blockStride,cellSize,nBins)
             return hog.compute(image)
 
-def recherche(img_path, descriptors, distance):
+def recherche(mongo, img_path, descriptors, distance_vector, distance_matrix, cfg):
 
-    if distance == 'euclidean':
-        distance_func = euclidean
-    elif distance == 'chiSquareDistance':
-        distance_func = chiSquareDistance
-    elif distance == 'bhatta':
-        distance_func = bhatta
-    elif distance == 'flann':
-        distance_func = flann
-    elif distance == 'bruteForceMatching':
-        distance_func = bruteForceMatching
-    elif distance == 'correlation':
-        distance_func = correlation
-    elif distance == 'interesection':
-        distance_func = interesection
+    # matching vector distance name with function
+    if distance_vector == 'euclidean':
+        distance_vector_func = euclidean
+    elif distance_vector == 'chiSquareDistance':
+        distance_vector_func = chiSquareDistance
+    elif distance_vector == 'bhatta':
+        distance_vector_func = bhatta
+    elif distance_vector == 'correlation':
+        distance_vector_func = correlation
+    elif distance_vector == 'interesection':
+        distance_vector_func = interesection
 
+    # matching matrix distance name with function
+    elif distance_matrix == 'flann':
+        distance_matrix_func = flann
+    elif distance_matrix == 'bruteForceMatching':
+        distance_matrix_func = bruteForceMatching
 
-    features_input = np.concatenate([extractReqFeatures(img_path, desc) for desc in descriptors], axis = None)
-    path = 'static/index/'
+    # matching of descriptors with right distance
+    distance_func = dict()
+    for desc_name in descriptors:
+        distance_func[desc_name] = distance_vector_func if desc_name in cfg['vector'] else distance_matrix_func
+    
+    # indexing input image
+    features_input = {desc : extractReqFeatures(img_path, desc) for desc in descriptors}
 
-    features_db = dict()
+    # loading features of database from mongo
+    features = dict()
+    for desc_name in descriptors:
+        documents = mongo.get_documents(desc_name)
+        features[desc_name] = {}
+        for document in documents:
+            for k, v in document.items():
+                if k != '_id':
+                    feature = np.asarray(v)
+                    img_path = os.path.join('static', 'db', k + '.jpg')
+                    features[desc_name][img_path] = feature
 
-    for desc in descriptors:
-        for file in os.listdir(os.path.join(path, desc)):
-            img_path_db = os.path.join('static', 'db', file[:-4] + '.jpg')
-            feature_path = os.path.join(path, desc, file)
-            feature = np.loadtxt(feature_path) 
+    # calculating distance from each image for each descriptor
+    distances = dict()
+    for desc_name, data in features.items():
+        for img_path, feature in data.items():   
+            if img_path not in distances:
+                distances[img_path] = {}         
+            distances[img_path][desc_name] = distance_func[desc_name](features_input[desc_name], feature)
+    
+    # normalizing distance
+    sum_of_distances = dict()
+    for img_path, data in distances.items():
+        for desc_name, dist in data.items():
+            if desc_name not in sum_of_distances:
+                sum_of_distances[desc_name] = 0
+            sum_of_distances[desc_name] += dist
+    for img_path, data in distances.items():
+        for desc_name, dist in data.items():
+            dist /= sum_of_distances[desc_name]
 
-            if img_path in features_db:
-                features_db[img_path_db] = np.concatenate((features_db[img_path_db], feature), axis = None)
-            else:
-                features_db[img_path_db] = feature
+    # calculating mean normalized distance from each image 
+    result = {img_path : np.mean(list(data.values())) for img_path, data in distances.items()}
 
-    distances_db = []
-    for img_path_db, features in features_db.items():
-        dist = distance_func(features_input, features)
-        distances_db.append((img_path_db, dist)) 
-
-    if distance in ["Correlation", "Intersection"]:
-        distances_db.sort(key = lambda x : x[1] ,reverse = True) 
+    # sorting image following best distance
+    if distance_vector in ["correlation", "intersection"]:
+        return sorted(result.items(), key = lambda x : x[1], reverse = True) 
     else:
-        distances_db.sort(key = lambda x : x[1] ,reverse = False) 
-
-    return distances_db
+        return sorted(result.items(), key = lambda x : x[1], reverse = False) 
 
 def rappel_precision():
 
