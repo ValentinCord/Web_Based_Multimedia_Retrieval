@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Log In</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_login.css') }}">
+</head>
+<body>
+    {% if session['logged_in'] %}
+    <p>You are logged in</p>
+    {% else %}
+    <form action='/login' method='post'>
+        <p><input class='data' type='username' name='username' placeholder='Username'></p>
+        <p><input class='data' type='password' name='password' placeholder='Password'></p>
+        <p><input class='btn' type='submit' value='Login'></p>
+    </form>
+    {% endif %}
+    
+    {% if get_flashed_messages() %}
+    <div>{% for mesg in get_flashed_messages() %}<p class='flash'>{{ mesg }}</p>{% endfor %}</div>
+    {% endif %}
+</html>

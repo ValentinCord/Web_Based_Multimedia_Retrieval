@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, request, redirect, flash
+from flask import Flask, render_template, request, redirect, flash, session
 
 from werkzeug.utils import secure_filename
 from time import time
@@ -23,8 +23,10 @@ cfg = {
     'matrix' : ['SIFT', 'ORB']
 }
 
-@app.route("/", methods = ['GET', 'POST'])
+@app.route('/', methods = ['GET', 'POST'])
 def main():
+    if not session.get('logged_in'):
+        return render_template('login.html')
 
     if request.method == 'POST' and 'form_config' in request.form:
         get_descriptor_form()
@@ -61,6 +63,21 @@ def main():
         cfg['show']['rp'] = True
 
     return render_template("index.html", cfg = cfg)
+
+
+@app.route('/login', methods = ['POST'])
+def admin_login():
+    if request.form['username'] == 'admin' and request.form['password'] == 'admin':
+        session['logged_in'] = True
+    else:
+        flash('Wrong credentials')
+    return main()
+
+@app.route('/logout')
+def login():
+    session['logged_in'] = False
+    return main()
+
 
 def get_descriptor_form():
     cfg['descriptors']['is_selected'] = False
