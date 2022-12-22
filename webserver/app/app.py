@@ -7,6 +7,8 @@ from werkzeug.utils import secure_filename
 from time import time
 from recherche import *
 
+import json
+
 # client = MongoClient('localhost', 27017, username = 'admin', password = 'admin')
 # db = client.db # database
 # index = db.index # collection

@@ -221,16 +221,3 @@ def rappel_precision():
     #Affichage de la courbe R/P
     img = cv2.imread(save_name,1) #load image in color
 
-    #Remise de l'image en RGB pour l'afficher correctement
-    b,g,r = cv2.split(img) # get b,g,r
-    img = cv2.merge([r,g,b]) # switch it to rgb
-
-    #convert image to QImage
-    height, width, channel = img.shape
-    bytesPerLine = 3 * width
-    qImg = QtGui.QImage(img.data, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)
-    pixmap=QtGui.QPixmap.fromImage(qImg)
-    width = label_requete.frameGeometry().width()
-    height = label_requete.frameGeometry().height()
-    label_courbe.setAlignment(QtCore.Qt.AlignCenter)
-    label_courbe.setPixmap(pixmap.scaled(width, height, QtCore.Qt.KeepAspectRatio,QtCore.Qt.SmoothTransformation))

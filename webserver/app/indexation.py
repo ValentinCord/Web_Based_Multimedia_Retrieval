@@ -12,31 +12,31 @@ def main():
 
     t1 = time()
     SIFT = generateSIFT('static/db')
-    save(SIFT, '../data_import/SIFT.json')
+    save(SIFT, 'data_import/SIFT.json')
     del SIFT
     t2 = time()
     HSV = generateHistogramme_HSV('static/db')
-    save(HSV, '../data_import/HSV.json')
+    save(HSV, 'data_import/HSV.json')
     del HSV
     t3 = time()
     HOG = generateHOG('static/db')
-    save(HOG, '../data_import/HOG.json')
+    save(HOG, 'data_import/HOG.json')
     del HOG
     t4 = time()
     LBP = generateLBP('static/db')
-    save(LBP, '../data_import/LBP.json')
+    save(LBP, 'data_import/LBP.json')
     del LBP
     t5 = time()
     ORB = generateORB('static/db')
-    save(ORB, '../data_import/ORB.json')
+    save(ORB, 'data_import/ORB.json')
     del ORB
     t6 = time()
     BGR = generateHistogramme_Color('static/db')
-    save(BGR, '../data_import/BGR.json')
+    save(BGR, 'data_import/BGR.json')
     del BGR
     t7 = time()
     GLCM = generateGLCM('static/db')
-    save(GLCM, '../data_import/GLCM.json')
+    save(GLCM, 'data_import/GLCM.json')
     del GLCM
     t8 = time()
 
@@ -66,7 +66,7 @@ def status_log(function):
     print(f'[INFO] Indexation : {function.__name__} --> Done')
 
 def generateHistogramme_Color(folder):
-    data = dict()
+    data = list()
     for path in tqdm(os.listdir(folder)):
         img = cv2.imread(os.path.join(folder, path))
         histB = cv2.calcHist([img], [0], None, [256], [0,256])
@@ -74,12 +74,12 @@ def generateHistogramme_Color(folder):
         histR = cv2.calcHist([img], [2], None, [256], [0,256])
         feature = np.concatenate((histB, np.concatenate((histG, histR), axis = None)), axis = None)
         num_image, _ = path.split('.')
-        data[num_image] = feature
+        data.append({num_image : feature})
     status_log(generateHistogramme_Color)
     return data
 
 def generateHistogramme_HSV(folder):
-    data = dict()
+    data = list()
     for path in tqdm(os.listdir(folder)):
         img = cv2.imread(os.path.join(folder, path))
         img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -88,12 +88,12 @@ def generateHistogramme_HSV(folder):
         histV = cv2.calcHist([img], [2], None, [256], [0,256])
         feature = np.concatenate((histH, np.concatenate((histS,histV), axis = None)), axis = None)
         num_image, _ = path.split(".")
-        data[num_image] = feature
+        data.append({num_image : feature})
     status_log(generateHistogramme_HSV)
     return data
    
 def generateSIFT(folder):
-    data = dict()
+    data = list()
     for path in tqdm(os.listdir(folder)):
         img = cv2.imread(os.path.join(folder, path))
         w, h, c = img.shape
@@ -103,26 +103,26 @@ def generateSIFT(folder):
         kps, descriptors = sift.detectAndCompute(img, None)
         num_image, _ = path.split(".")
         if descriptors is not None:
-            data[num_image] = descriptors
+            data.append({num_image : descriptors})
     status_log(generateSIFT)   
     return data
 
 def generateORB(folder):
-    data = dict()
+    data = list()
     for path in tqdm(os.listdir(folder)):
         img = cv2.imread(os.path.join(folder, path))
         orb = cv2.ORB_create()
         kps, descriptors = orb.detectAndCompute(img, None)
         num_image, _ = path.split(".")
         if descriptors is not None:        
-            data[num_image] = descriptors
+            data.append({num_image : descriptors})
     status_log(generateORB)   
     return data
 
 def generateGLCM(folder):
     distances = [1, -1]
     angles = [0, np.pi/4, np.pi/2, 3*np.pi/4]
-    data = dict()
+    data = list()
     for path in tqdm(os.listdir(folder)):
         img = cv2.imread(os.path.join(folder, path))
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -136,7 +136,7 @@ def generateGLCM(folder):
         glcmProperties6 = graycoprops(glcmMatrix, 'ASM').ravel()
         feature =np.array([glcmProperties1,glcmProperties2,glcmProperties3,glcmProperties4,glcmProperties5,glcmProperties6]).ravel()
         num_image, _ = path.split(".")
-        data[num_image] = feature
+        data.append({num_image : feature})
     status_log(generateGLCM)  
     return data
         
@@ -145,7 +145,7 @@ def generateLBP(folder):
     radius = 1
     method = 'default'
     subSize = (70,70)
-    data = dict()
+    data = list()
     for path in tqdm(os.listdir(folder)):
         img = cv2.imread(os.path.join(folder, path))
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -158,13 +158,13 @@ def generateLBP(folder):
                 subHist, edges = np.histogram(subVector, bins = int(2**points), range = (0,2**points))
                 histograms = np.concatenate((histograms, subHist), axis = None)
         num_image, _ = path.split(".")
-        data[num_image] = histograms
+        data.append({num_image : histograms})
     status_log(generateLBP)   
     return data
 
 
 def generateHOG(folder):
-    data = dict()
+    data = list()
     cellSize = (25,25)
     blockSize = (50,50)
     blockStride = (25,25)
@@ -177,7 +177,7 @@ def generateHOG(folder):
         hog = cv2.HOGDescriptor(winSize, blockSize, blockStride, cellSize, nBins)
         feature = hog.compute(image)
         num_image, _ = path.split(".")
-        data[num_image] = feature
+        data.append({num_image : feature})
     status_log(generateHOG)   
     return data
 

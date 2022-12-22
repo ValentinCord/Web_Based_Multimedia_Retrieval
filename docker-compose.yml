@@ -1,19 +1,22 @@
 version: "3"
 services:
-  myapp:
-    build : . 
-    ports:
-      - 5000:5000
-    depends_on:
-      - mongo
   mongo:
     image: mongo:latest
     hostname: localhost
     ports:
       - 27017:27017
     environment:
-      - MONGO_INITDB_DATABASE=db
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin
-    volumes:
-      - ./init:/docker-entrypoint-initdb.d
+
+  mongo-seed:
+    build: ./mongo-seed
+    depends_on:
+      - mongo
+
+  webserver:
+    build : ./webserver
+    ports:
+      - 5000:5000
+    depends_on:
+      - mongo-seed

@@ -1,8 +1,0 @@
-Computation times for descriptors benchmark
-BGR  : 31.207 s
-HSV  : 35.776 s
-HOG  : 97.248 s
-LBP  : 199.788 s
-ORB  : 141.632 s
-SIFT : 158.114 s
-GLCM : 465.701 s
