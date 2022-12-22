@@ -8,9 +8,10 @@
     {% if session['logged_in'] %}
     <p>You are logged in</p>
     {% else %}
+    <h1>WEB MIR PROJECT</h1>
     <form action='/login' method='post'>
-        <p><input class='data' type='username' name='username' placeholder='Username'></p>
-        <p><input class='data' type='password' name='password' placeholder='Password'></p>
+        <p><input class='data' type='username' name='username' autocomplete="off" placeholder='Username'></p>
+        <p><input class='data' type='password' name='password' autocomplete="off" placeholder='Password'></p>
         <p><input class='btn' type='submit' value='Login'></p>
     </form>
     {% endif %}
