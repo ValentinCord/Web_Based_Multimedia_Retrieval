@@ -1,11 +1,12 @@
 Flask :
-login page
-history page
+    login page : session, base de données utilisateurs 
+    history page : 
 
 MIR:
-deep learning
-RMAC et PCA
-concatenate and normalized
+    deep learning
+    RMAC et PCA
+    concatenate and normalized
+    metric
 
 SECURITY:
-variable environment
+    variable environment

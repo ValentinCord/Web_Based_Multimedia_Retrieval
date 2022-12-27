@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_history.css') }}">
+</head>
+<body>
+
+    <header>
+        <img class = nav_logo src = "static/logo.png" alt = "logo">
+        <nav>
+            <ul class= nav_links>
+                <li><a href='{{ url_for('main') }}'>Search</a></li>
+                <li><a href='{{ url_for('history') }}'>History</a></li>
+                <li><a href='{{ url_for('logout') }}'>Log out</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <h1>Results History</h1>
+
+    <table class = history_table>
+        <tr> 
+            <th>Descriptors</th>
+            <th>Vector distance</th> 
+            <th>Matrix distance</th> 
+            <th>Image path</th> 
+            <th>AP(20)</th>
+            <th>AP(50)</th>
+            <th>20-Precision</th>
+            <th>50-Precision</th>
+        </tr>
+        {% for data in mongo.get_documents('HISTORY'): %}
+            <tr> 
+                <td>{{ data['descriptors'] }}</td>
+                <td>{{ data['distance_vect'] }}</td> 
+                <td>{{ data['distance_matrix'] }}</td> 
+                <td>{{ data['img_path'] }}</td> 
+                <td>{{ data['ap-20'] }}</td>
+                <td>{{ data['ap-50'] }}</td>
+                <td>{{ data['20-precision'] }}</td>
+                <td>{{ data['50-precision'] }}</td>
+            </tr>
+        {% endfor %}
+      </table>
+</body>
+</html>

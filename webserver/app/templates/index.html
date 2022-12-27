@@ -107,6 +107,18 @@
   </head>
 
   <body>
+
+    <header>
+        <img class = nav_logo src = "static/logo.png" alt = "logo">
+        <nav>
+            <ul class= nav_links>
+                <li><a href='{{ url_for('main') }}'>Search</a></li>
+                <li><a href='{{ url_for('history') }}'>History</a></li>
+                <li><a href='{{ url_for('logout') }}'>Log out</a></li>
+            </ul>
+        </nav>
+    </header>
+
     <!-- Header for Pacman Game -->
     <div id = game_header>
       <div id = game>
@@ -352,55 +364,64 @@
         <div id = c1>
             <h1>Configuration</h1>
 
-            <form method="POST">
-                <h2>Select descriptors</h2>
+            <form method="POST" action='/'>
+                <h2>I. Select descriptors</h2>
                 <div id = desc>
-                    <div>
-                        <h3>Shape</h3>
+                    <div class = desc-item>
+                        <h3>Color</h3>
                         <div><input type="checkbox" name="BGR"/><label>BGR</label></div>
                         <div><input type="checkbox" name="HSV" /><label>HSV</label></div>
                     </div>
-                    <div>
-                        <h3>Form</h3>
+                    <div class = desc-item>
+                        <h3>Shape</h3>
                         <div><input type="checkbox" name="SIFT"/><label>SIFT</label></div>
                         <div><input type="checkbox" name="GLCM"/><label>GLCM</label></div>
                     </div>
-                    <div>
+                    <div class = desc-item>
                         <h3>texture</h3>
                         <div><input type="checkbox" name="HOG" /><label>HOG</label></div>
                         <div><input type="checkbox" name="LBP" /><label>LBP</label></div>
                         <div><input type="checkbox" name="ORB" /><label>ORB</label></div>
                     </div>
-                    <div>
+                    <div class = desc-item>
                         <h3>Deep Learning</h3>
-                        <div><input type="checkbox" value="DL" name="DL" /><label>VGG16</label></div>
-                        <div><input type="checkbox" value="DL" name="DL" /><label>Xception</label></div>
+                        <div><input type="checkbox" name="VGG16" /><label>VGG16</label></div>
+                        <div><input type="checkbox" name="XCEPTION" /><label>Xception</label></div>
+                        <div><input type="checkbox" name="MOBILENET" /><label>MobileNet</label></div>
                     </div>
+                    <input class = retro_btn type="submit" name = 'form_desc' value="Submit"/>
                 </div>
+            </form>
 
-
-                <h2>Select distance</h2>
-                <select name="distance" >
-                    <option disabled selected value> Select </option>
-                    <option value = 'euclidean'>Euclidienne</option>
-                    <option value = 'correlation'>Corrélation</option>
-                    <option value = 'interesection'>Corrélation</option>
-                    <option value = 'chiSquareDistance'>Chi-square</option>
-                    <option value = 'bhatta'>Bhattcharyya</option>
-                    <option value = 'bruteForceMatching'>Brute Force Matcher</option>
-                    <option value = 'flann'>Flann</option>
-                </select>
-
-                <input class = retro_btn type="submit" name = 'form_config' value="Submit"/>
+            <form method="POST"  action='/'>
+                <h2>II. Select distance</h2>
+                <div id = dist>
+                    <select class = small_select name="distance_vect" >
+                        <option disabled selected value> Vector distance</option>
+                        <option value = 'euclidean'>Euclidienne</option>
+                        <option value = 'correlation'>Corrélation</option>
+                        <option value = 'interesection'>Corrélation</option>
+                        <option value = 'chiSquareDistance'>Chi-square</option>
+                        <option value = 'bhatta'>Bhattcharyya</option>
+                    </select> 
+                    <select class = small_select name="distance_matrix" >
+                        <option disabled selected value> Matrix distance </option>
+                        <option value = 'bruteForceMatching'>Brute Force Matcher</option>
+                        <option value = 'flann'>Flann</option>
+                    </select>
+                    <input class = retro_btn type="submit" name = 'form_dist' value="Submit"/>
+                </div>
             </form>
         
-            <h2>Select input image</h2>
-            <form method= "POST" enctype=multipart/form-data>
-                <input type=file name=file>
-                <input class = retro_btn type=submit name='form_input_image' value="Submit">
+            <h2>III. Select input image</h2>
+            <form method= "POST" enctype=multipart/form-data  action='/'>
+                <div id = inputfile>
+                    <input class = input_size type=file name=file>
+                    <input class = retro_btn type=submit name='form_input_image' value="Submit">
+                </div>
             </form>
             
-            <form method = 'POST'><input type = submit name = 'form_search' class = 'retro_btn large'value = 'Indexation'></form>
+            <form method = 'POST' action='/'><input type = submit name = 'form_search' class = 'retro_btn large'value = 'Indexation'></form>
 
         </div>
 
@@ -416,7 +437,7 @@
             <h1>Summary</h1>
             
             {% if cfg['descriptors']['is_selected'] %}
-                <h2>Descriptors</h2>
+                <h3>Descriptors</h3>
                 {% for k,v in cfg['descriptors'].items() %}
                     {% if v == True and k != 'is_selected' %}
                         {{ k }}<br>
@@ -425,17 +446,18 @@
             {% endif %}
 
             {% if cfg['distance']['is_selected'] %}
-                <h2>Distance</h2>
-                {{ cfg['distance']['name'] }}
+                <h3>Distance</h3>
+                vector : {{ cfg['distance']['vect'] }} <br>
+                matrix : {{ cfg['distance']['matrix'] }}
             {% endif %}
 
             {% if cfg['input']['is_selected'] %}
-                <h2>Input</h2>
+                <h3>Input</h3>
                 <img src = {{ cfg['input']['img_path'] }} height = 200px > 
             {% endif %}
 
             {% if cfg['result']['done'] %}
-                <h2>Indexation and Search time</h2>
+                <h3>Indexation and Search time</h3>
                 {{ cfg['result']['time'] }} seconds
             {% endif %}
 
@@ -448,9 +470,9 @@
     <br>
     {% if cfg['result']['done']%}
     <div id = show>
-        <form method = 'POST'><input type = submit class = retro_btn name = 'form_top_20' value = 'Show top 20'></form>
-        <form method = 'POST'><input type = submit class = retro_btn name = 'form_top_50' value = 'Show top 50'></form>
-        <form method = 'POST'><input type = submit class = retro_btn name = 'form_rp'     value = 'Show RP curve'></form>
+        <form method = 'POST' action='/'><input type = submit class = retro_btn name = 'form_top_20' value = 'Show top 20'></form>
+        <form method = 'POST' action='/'><input type = submit class = retro_btn name = 'form_top_50' value = 'Show top 50'></form>
+        <form method = 'POST' action='/'><input type = submit class = retro_btn name = 'form_rp'     value = 'Show RP curve'></form>
     </div>
     {% endif %}
     <br>
@@ -467,6 +489,9 @@
             {% for v in cfg['result']['names'][:50] %}
                 <img class = 'item' src = {{ v[0] }}>
             {% endfor %}
+        {% elif cfg['show']['rp'] %}
+            <img class = 'item' src = 'metrics/rp_class.png'>
+            <img class = 'item' src = 'metrics/rp_subclass.png'>
         {% endif %}
         </div>
     </div>

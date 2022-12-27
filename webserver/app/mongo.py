@@ -1,10 +1,19 @@
+import os
+
 from pymongo import MongoClient
 
 class Mongo():
     def __init__(self):
-        self.client = MongoClient('mongodb', 27017, username = 'admin', password = 'admin')
+        self.client = MongoClient(
+            os.getenv('MONGO_INITDB_HOST'), 
+            int(os.getenv('MONGO_INITDB_PORT')), 
+            username = os.getenv('MONGO_INITDB_ROOT_USERNAME'), 
+            password = os.getenv('MONGO_INITDB_ROOT_PASSWORD')
+        )
+
         self.db = self.client.db
-    
+        self.history = self.db.HISTORY
+
     def get_collection(self, collection_name):
         """
         Return collection object from collection name
@@ -17,10 +26,4 @@ class Mongo():
         """
         collection = self.get_collection(collection_name)
         return [document for document in collection.find()]
-
-    def init_history(self):
-        """
-        Initialize history collection
-        """
-        return self.db.HISTORY
 

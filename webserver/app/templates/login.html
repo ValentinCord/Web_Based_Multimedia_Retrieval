@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Log In</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style_login.css') }}">
 </head>
+
 <body>
     {% if session['logged_in'] %}
     <p>You are logged in</p>
     {% else %}
     <h1>WEB MIR PROJECT</h1>
-    <form action='/login' method='post'>
+    <form method='POST' action='/login'>
         <p><input class='data' type='username' name='username' autocomplete="off" placeholder='Username'></p>
         <p><input class='data' type='password' name='password' autocomplete="off" placeholder='Password'></p>
-        <p><input class='btn' type='submit' value='Login'></p>
+        <p><input class='btn' type='submit' value='Login' name='form_login'></p>
     </form>
     {% endif %}
-    
+
     {% if get_flashed_messages() %}
     <div>{% for mesg in get_flashed_messages() %}<p class='flash'>{{ mesg }}</p>{% endfor %}</div>
     {% endif %}
+
 </html>

@@ -7,7 +7,6 @@ h1 {
     color : #ffffff;
     margin-top : 40px;
     text-decoration-line: underline;
-    text-decoration-style: double;
 }
 
 .ko {
@@ -16,16 +15,15 @@ h1 {
 }
 
 h2 {
-    filter : drop-shadow(0 0 15px #ffffff) drop-shadow(0 0 50px #ffffff) contrast(2) brightness(2);
     color : #ffffff;
     margin-top : 20px;
 }
 
 h3 {
-    filter : drop-shadow(0 0 15px #ff00bf) drop-shadow(0 0 50px #ff00bf) contrast(2) brightness(2);
-    color : #ff00bf;
-    margin-top : 10px;
+    color : #ffffff;
+    margin : 0px;
 }
+
 
 #result h1 {
     text-align: center;
@@ -34,6 +32,7 @@ h3 {
 body {
     color : white;
     background-color: black;
+    height: 100vh;
 }
 
 #search {
@@ -65,10 +64,28 @@ body {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+    width: 500px;
 }
 
-#desc h3 {
-    margin-bottom: 5px;
+#dist {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+#inputfile {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.input_size {
+    width: 390px;
+}
+
+
+.small_select {
+    height: 25px;
 }
 
 #game_header {
@@ -125,6 +142,8 @@ body {
     border : 6px solid #48ff00;
     border-style : double;
     text-transform: uppercase;
+    height: 60px;
+    margin: auto 0px;
 }
 
 .retro_btn:hover {
@@ -132,6 +151,43 @@ body {
 }
 
 .large {
-    margin : 15px;
+    margin-top : 15px;
     width : 100%;
+}
+
+li, a {
+    font-weight: 500;
+    font-size: 20px;
+    color: #ffffff;
+    text-decoration: None;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 2%;
+    height: 50px;
+}
+
+.nav_logo {
+    cursor: pointer;
+    height: 100%;
+}
+
+.nav_links {
+    list-style: none;
+}
+
+.nav_links li{
+    display: inline-block;
+    padding: 0px 20px;
+}
+
+.nav_links li a{
+    transition: all 0.3s ease 0s;
+}
+
+.nav_links li a:hover{
+    color: #00ffff;
 }

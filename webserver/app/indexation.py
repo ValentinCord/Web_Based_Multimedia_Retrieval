@@ -10,43 +10,13 @@ from skimage.feature import graycomatrix, local_binary_pattern, graycoprops
 
 def main():
 
-    t1 = time()
-    SIFT = generateSIFT('static/db')
-    save(SIFT, 'data_import/SIFT.json')
-    del SIFT
-    t2 = time()
-    HSV = generateHistogramme_HSV('static/db')
-    save(HSV, 'data_import/HSV.json')
-    del HSV
-    t3 = time()
-    HOG = generateHOG('static/db')
-    save(HOG, 'data_import/HOG.json')
-    del HOG
-    t4 = time()
-    LBP = generateLBP('static/db')
-    save(LBP, 'data_import/LBP.json')
-    del LBP
-    t5 = time()
-    ORB = generateORB('static/db')
-    save(ORB, 'data_import/ORB.json')
-    del ORB
-    t6 = time()
-    BGR = generateHistogramme_Color('static/db')
-    save(BGR, 'data_import/BGR.json')
-    del BGR
-    t7 = time()
-    GLCM = generateGLCM('static/db')
-    save(GLCM, 'data_import/GLCM.json')
-    del GLCM
-    t8 = time()
-
-    time_SIFT = round(t2 - t1, 3)
-    time_HSV  = round(t3 - t2, 3)
-    time_HOG  = round(t4 - t3, 3)
-    time_LBP  = round(t5 - t4, 3)
-    time_ORB  = round(t6 - t5, 3)
-    time_BGR  = round(t7 - t6, 3)
-    time_GLCM = round(t8 - t7, 3)
+    time_SIFT = generate(generateSIFT, 'static/db', 'data_import/SIFT.json')
+    time_HSV  = generate(generateHistogramme_HSV, 'static/db', 'data_import/HSV.json')
+    time_HOG  = generate(generateHOG, 'static/db', 'data_import/HOG.json')
+    time_LBP  = generate(generateLBP, 'static/db', 'data_import/LBP.json')
+    time_ORB  = generate(generateORB, 'static/db', 'data_import/ORB.json')
+    time_BGR  = generate(generateHistogramme_Color, 'static/db', 'data_import/BGR.json')
+    time_GLCM = generate(generateGLCM, 'static/db', 'data_import/GLCM.json')
 
     with open('benchmark.txt', 'w') as fin:
         fin.write('Computation times for descriptors benchmark\n')
@@ -58,12 +28,17 @@ def main():
         fin.write(f'SIFT : {time_SIFT} s\n')
         fin.write(f'GLCM : {time_GLCM} s\n')
 
+def generate(generate_func, source, output):
+    start = time()
+    feature = generate_func(source)
+    save(feature, output)
+    del feature
+    print(f'[INFO] Indexation : {generate_func.__name__} --> Done')
+    return round(time() - start, 3)
+
 def save(data, file_name):
     with open(file_name, 'w') as f:
         json.dump(data, f, cls = JsonCustomEncoder)
-
-def status_log(function):
-    print(f'[INFO] Indexation : {function.__name__} --> Done')
 
 def generateHistogramme_Color(folder):
     data = list()
@@ -75,7 +50,6 @@ def generateHistogramme_Color(folder):
         feature = np.concatenate((histB, np.concatenate((histG, histR), axis = None)), axis = None)
         num_image, _ = path.split('.')
         data.append({num_image : feature})
-    status_log(generateHistogramme_Color)
     return data
 
 def generateHistogramme_HSV(folder):
@@ -89,7 +63,6 @@ def generateHistogramme_HSV(folder):
         feature = np.concatenate((histH, np.concatenate((histS,histV), axis = None)), axis = None)
         num_image, _ = path.split(".")
         data.append({num_image : feature})
-    status_log(generateHistogramme_HSV)
     return data
    
 def generateSIFT(folder):
@@ -104,7 +77,6 @@ def generateSIFT(folder):
         num_image, _ = path.split(".")
         if descriptors is not None:
             data.append({num_image : descriptors})
-    status_log(generateSIFT)   
     return data
 
 def generateORB(folder):
@@ -116,7 +88,6 @@ def generateORB(folder):
         num_image, _ = path.split(".")
         if descriptors is not None:        
             data.append({num_image : descriptors})
-    status_log(generateORB)   
     return data
 
 def generateGLCM(folder):
@@ -137,7 +108,6 @@ def generateGLCM(folder):
         feature =np.array([glcmProperties1,glcmProperties2,glcmProperties3,glcmProperties4,glcmProperties5,glcmProperties6]).ravel()
         num_image, _ = path.split(".")
         data.append({num_image : feature})
-    status_log(generateGLCM)  
     return data
         
 def generateLBP(folder):
@@ -159,9 +129,7 @@ def generateLBP(folder):
                 histograms = np.concatenate((histograms, subHist), axis = None)
         num_image, _ = path.split(".")
         data.append({num_image : histograms})
-    status_log(generateLBP)   
     return data
-
 
 def generateHOG(folder):
     data = list()
@@ -178,7 +146,6 @@ def generateHOG(folder):
         feature = hog.compute(image)
         num_image, _ = path.split(".")
         data.append({num_image : feature})
-    status_log(generateHOG)   
     return data
 
 class JsonCustomEncoder(json.JSONEncoder):

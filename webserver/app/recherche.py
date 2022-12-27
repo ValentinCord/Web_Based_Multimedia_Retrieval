@@ -5,47 +5,13 @@ import numpy as np
 import math
 
 from skimage.feature import graycomatrix, graycoprops, local_binary_pattern
+from distance import distance_matching
+import matplotlib.pyplot as plt
 
-def euclidean(l1, l2):
-    n = min(len(l1), len(l2))
-    return np.sqrt(np.sum((l1[:n] - l2[:n])**2))
-
-def chiSquareDistance(l1, l2):
-    n = min(len(l1), len(l2))
-    return np.sum((l1[:n] - l2[:n])**2 / l2[:n])
-
-def bhatta(l1, l2):
-    l1 = np.array(l1)
-    l2 = np.array(l2)
-    num = np.sum(np.sqrt(np.multiply(l1,l2,dtype=np.float64)),dtype=np.float64)
-    den = np.sqrt(np.sum(l1,dtype=np.float64)*np.sum(l2,dtype=np.float64))
-    return math.sqrt( 1 - num / den )
-
-def flann(a,b):
-    a = np.float32(np.array(a))
-    b = np.float32(np.array(b))
-    if a.shape[0]==0 or b.shape[0]==0:
-        return np.inf
-    index_params = dict(algorithm=1, trees=5)
-    sch_params = dict(checks=50)
-    flannMatcher = cv2.FlannBasedMatcher(index_params, sch_params)
-    matches = list(map(lambda x: x.distance, flannMatcher.match(a, b)))
-    return np.mean(matches)
-
-def bruteForceMatching(a, b):
-    a = np.array(a).astype('uint8')
-    b = np.array(b).astype('uint8')
-    if a.shape[0]==0 or b.shape[0]==0:
-        return np.inf
-    bf = cv2.BFMatcher(cv2.NORM_HAMMING)
-    matches = list(map(lambda x: x.distance, bf.match(a, b)))
-    return np.mean(matches)
-
-def correlation(a, b):
-    return cv2.compareHist(np.float32(a), np.float32(b), cv2.HISTCMP_CORREL)
-
-def interesection(a, b):
-    return cv2.compareHist(np.float32(a), np.float32(b), cv2.HISTCMP_INTERSECT)
+from keras_preprocessing.image import load_img, img_to_array
+from keras.applications.vgg16 import VGG16, preprocess_input #224*224
+from keras.applications.xception import Xception, preprocess_input, decode_predictions #299*299
+from keras.applications.mobilenet import MobileNet, preprocess_input, decode_predictions #224*224
 
 def extractReqFeatures(fileName, algo_choice):  
 
@@ -118,30 +84,40 @@ def extractReqFeatures(fileName, algo_choice):
             hog = cv2.HOGDescriptor(winSize,blockSize,blockStride,cellSize,nBins)
             return hog.compute(image)
 
+        elif algo_choice == 'VGG16':
+            model = VGG16(include_top = False, weights ='imagenet', input_shape = (224, 224, 3), pooling = 'avg')
+            img = load_img(fileName, target_size = (224, 224))
+            img = img_to_array(img)
+            img = img.reshape((1, img.shape[0], img.shape[1], img.shape[2]))
+            img = preprocess_input(img)
+            feature = model.predict(img)
+            feature = np.array(feature[0])
+            return feature
+
+        elif algo_choice == 'XCEPTION':
+            model = Xception(include_top = False, weights ='imagenet', input_shape = (299, 299, 3), pooling = 'avg')
+            img = load_img(fileName, target_size = (299, 299))
+            img = img_to_array(img)
+            img = img.reshape((1, img.shape[0], img.shape[1], img.shape[2]))
+            img = preprocess_input(img)
+            feature = model.predict(img)
+            feature = np.array(feature[0])
+            return feature
+
+        elif algo_choice == 'MOBILENET':
+            model = MobileNet(include_top = False, weights ='imagenet', input_shape = (224, 224, 3), pooling = 'avg')
+            img = load_img(fileName, target_size = (224, 224))
+            img = img_to_array(img)
+            img = img.reshape((1, img.shape[0], img.shape[1], img.shape[2]))
+            img = preprocess_input(img)
+            feature = model.predict(img)
+            feature = np.array(feature[0])
+            return feature
+
 def recherche(mongo, img_path, descriptors, distance_vector, distance_matrix, cfg):
 
-    # matching vector distance name with function
-    if distance_vector == 'euclidean':
-        distance_vector_func = euclidean
-    elif distance_vector == 'chiSquareDistance':
-        distance_vector_func = chiSquareDistance
-    elif distance_vector == 'bhatta':
-        distance_vector_func = bhatta
-    elif distance_vector == 'correlation':
-        distance_vector_func = correlation
-    elif distance_vector == 'interesection':
-        distance_vector_func = interesection
-
-    # matching matrix distance name with function
-    elif distance_matrix == 'flann':
-        distance_matrix_func = flann
-    elif distance_matrix == 'bruteForceMatching':
-        distance_matrix_func = bruteForceMatching
-
-    # matching of descriptors with right distance
-    distance_func = dict()
-    for desc_name in descriptors:
-        distance_func[desc_name] = distance_vector_func if desc_name in cfg['vector'] else distance_matrix_func
+    # selecting distance function
+    distance_func = distance_matching(cfg, distance_vector, distance_matrix, descriptors)
     
     # indexing input image
     features_input = {desc : extractReqFeatures(img_path, desc) for desc in descriptors}
@@ -186,59 +162,130 @@ def recherche(mongo, img_path, descriptors, distance_vector, distance_matrix, cf
     else:
         return sorted(result.items(), key = lambda x : x[1], reverse = False) 
 
-def rappel_precision():
+def save_metrics(cfg, mongo):
 
-    rappel_precision = []
-    rappels = []
-    precisions = []
+    revelant_classe = []
+    revelant_subclasse = []
 
-    filename_req = os.path.basename(fileName)
-    num_image, _ = filename_req.split(".")
-    classe_image_requete = int(num_image)/100
-    val = 0
+    input_path = cfg['input']['img_path']
+    classe_input = input_path.split('/')[2].split('_')[0]
+    subclasse_input = input_path.split('/')[2].split('_')[1]
 
-    for j in range(sortie):
-        classe_image_proche=(int(nom_image_plus_proches[j].split('.')[0]))/100
-        classe_image_requete = int(classe_image_requete)
-        classe_image_proche = int(classe_image_proche)
+    # check if the result is correctly predicted in terme of class and subclass
+    for result in cfg['result']['names'][:50]:
+        classe = result[0].split('/')[2].split('_')[0]
+        subclasse = result[0].split('/')[2].split('_')[1]
+        revelant_classe.append(True) if classe_input == classe else revelant_classe.append(False)
+        revelant_subclasse.append(True) if subclasse_input == subclasse else revelant_subclasse.append(False)
 
-        if classe_image_requete == classe_image_proche:
-            rappel_precision.append(True) #Bonne classe (pertinant)
-            val += 1
-        else:
-            rappel_precision.append(False) #Mauvaise classe (non pertinant)
+    # number of images in the database for each class and subclass
+    num_class = {
+        '0' : 797,
+        '1' : 934,
+        '2' : 933,
+        '3' : 905,
+        '4' : 935
+    }
+    num_subclass = {
+        '0' : {
+            '0': 155,
+            '1': 157,
+            '2': 30,
+            '3': 145,
+            '4': 156,
+            '5': 154,
+        },
+        '4' : {
+            '0': 157,
+            '1': 156,
+            '2': 153,
+            '3': 156,
+            '4': 157,
+            '5': 156,
+        },
+        '3' : {
+            '0': 152,
+            '1': 157,
+            '2': 128,
+            '3': 155,
+            '4': 156,
+            '5': 157,
+        },
+        '1' : {
+            '0': 155,
+            '1': 156,
+            '2': 156,
+            '3': 156,
+            '4': 156,
+            '5': 156,
+        },
+        '2' : {
+            '0': 157,
+            '1': 155,
+            '2': 154,
+            '3': 156,
+            '4': 155,
+            '5': 156,
+        }
+    }
 
-    print(rappel_precision)
-    print(sortie)
+    recall_class = []
+    precision_class = []
+    recall_subclass = []
+    precision_subclass = []
 
-    for i in range(sortie):
+    for i in range(0, 50):
         j = i
-        val = 0
-        while(j >= 0):
-            if rappel_precision[j]:
-                val += 1
+        val_classe = 0
+        val_subclasse = 0   
+        while (j >= 0):
+            if revelant_classe[j]:
+                val_classe += 1
+            if revelant_subclasse[j]:
+                val_subclasse += 1
             j -= 1
 
-        precision = val/(i+1)
-        rappel = val/sortie
+        p_class = val_classe / (i+1)
+        r_class = val_classe / num_class[classe_input]
+        p_subclass = val_subclasse / (i+1)
+        r_subclass = val_subclasse / num_subclass[classe_input][subclasse_input]
 
-        rappels.append(rappel)
-        precisions.append(precision)
+        recall_class.append(r_class)
+        precision_class.append(p_class)
+        recall_subclass.append(r_subclass)
+        precision_subclass.append(p_subclass)
 
-    #Création de la courbe R/P
-    plt.plot(rappels,precisions)
+    # RP Curve for class retrieval
+    plt.plot(recall_class, precision_class)
     plt.xlabel("Recall")
     plt.ylabel("Precision")
-    plt.title("R/P"+str(sortie)+" voisins de l'image n°"+num_image)
-
-    #Enregistrement de la courbe RP
-    save_folder=os.path.join(".",num_image)
-    if not os.path.exists(save_folder):
-        os.makedirs(save_folder)
-    save_name=os.path.join(save_folder,num_image+'.png')
-    plt.savefig(save_name,format='png',dpi=600)
+    plt.title("RP curve for class retrieval")
+    plt.savefig('static/metrics/rp_class.png', dpi = 600)
     plt.close()
 
-    #Affichage de la courbe R/P
-    img = cv2.imread(save_name,1) #load image in color
+    # RP Curve for subclass retrieval
+    plt.plot(recall_subclass, precision_subclass)
+    plt.xlabel("Recall")
+    plt.ylabel("Precision")
+    plt.title("RP curve for subclass retrieval")
+    plt.savefig('static/metrics/rp_subclass.png', format = 'png', dpi = 600)
+    plt.close()
+
+    history = mongo.get_collection('HISTORY')
+
+    data = dict()
+    data['distance_vect'] = cfg['distance']['vect']
+    data['distance_matrix'] = cfg['distance']['matrix']
+    descriptors = [k for k, v in cfg['descriptors'].items() if v == True and k != 'is_selected']
+    data['descriptors'] = "-".join(descriptors)
+    data['img_path'] = cfg['input']['img_path'].split("/")[-1]
+
+    data['ap-20'] = sum(x for x in precision_class[:20])/20    # AP(20)
+    data['ap-50'] = sum(x for x in precision_class[:50])/50    # AP(50)
+    data['20-precision'] = sum(1 for x in revelant_classe[:20] if x == True)/20    # R-Precision
+    data['50-precision'] = sum(1 for x in revelant_classe[:50] if x == True)/50    # R-Precision
+
+    history.insert_one(data)
+
+    # mean average precision (MaP) = moyenne des AP
 
