@@ -55,6 +55,10 @@ body {
     margin: 10px
 }
 
+.item_curve {
+    height: 500px;
+    margin: 10px;}
+
 #show {
     display: flex;
     justify-content: space-around;

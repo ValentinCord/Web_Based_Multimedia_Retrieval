@@ -490,8 +490,22 @@
                 <img class = 'item' src = {{ v[0] }}>
             {% endfor %}
         {% elif cfg['show']['rp'] %}
-            <img class = 'item' src = 'metrics/rp_class.png'>
-            <img class = 'item' src = 'metrics/rp_subclass.png'>
+            <img class = 'item_curve' src = 'static/rp_class.png'>
+            <img class = 'item_curve' src = 'static/rp_subclass.png'>
+            <div class = metrics>
+                <h3>Class metrics</h3>
+                {% for k,v in cfg['metrics']['classe'].items() %}
+                    {{ k }} : {{ v }}
+                    <br>
+                {% endfor %}    
+            </div>
+            <div class = metrics>
+                <h3>Subclass metrics</h3>
+                {% for k,v in cfg['metrics']['subclasse'].items() %}
+                    {{ k }} : {{ v }}
+                    <br>
+                {% endfor %}    
+            </div>
         {% endif %}
         </div>
     </div>

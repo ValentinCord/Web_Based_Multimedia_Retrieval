@@ -27,7 +27,10 @@ cfg = {
     'show' : {},
     'vector' : ['BGR', 'HSV', 'GLCM', 'HOG', 'LBP', 'VGG16', 'XCEPTION', 'MOBILENET'],
     'matrix' : ['SIFT', 'ORB'],
-    'history' : []
+    'metrics' : {
+        'classe': {},
+        'subclasse': {}
+    }
 }
 
 @app.route('/', methods = ['GET', 'POST'])
