@@ -14,7 +14,10 @@ from keras.applications.xception import Xception, preprocess_input, decode_predi
 from keras.applications.mobilenet import MobileNet, preprocess_input, decode_predictions #224*224
 
 def extractReqFeatures(fileName, algo_choice):  
-
+    """
+    Extract features from an image using the selected algorithm
+    Return a vector/matrix of features
+    """
     if fileName : 
         img = cv2.imread(fileName)
             
@@ -115,7 +118,10 @@ def extractReqFeatures(fileName, algo_choice):
             return feature
 
 def recherche(mongo, img_path, descriptors, distance_vector, distance_matrix, cfg):
-
+    """
+    Extracts features from input image and compares them with features from database
+    Return ordered list of images from database with their distance from input image
+    """
     # selecting distance function
     distance_func = distance_matching(cfg, distance_vector, distance_matrix, descriptors)
     
@@ -163,6 +169,10 @@ def recherche(mongo, img_path, descriptors, distance_vector, distance_matrix, cf
         return sorted(result.items(), key = lambda x : x[1], reverse = False) 
 
 def save_metrics(cfg, mongo):
+    """
+    If the image query is in the database, calculate the metrics and save them in the database
+    Metrics are rp_curve, AP(20), AP(50), 20-precision, 50-precision for class and subclass search
+    """
 
     revelant_classe = []
     revelant_subclasse = []

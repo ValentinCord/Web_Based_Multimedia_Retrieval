@@ -32,3 +32,4 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin
       - PYTHONUNBUFFERED=1
+      - FLASK_KEY=secret
