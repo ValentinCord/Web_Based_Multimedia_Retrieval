@@ -293,13 +293,16 @@ def save_metrics(cfg, mongo):
     history.insert_one(data)
 
     # saving query's metrics in cfg to show result
+
+    # class metrics
     data = dict()
     data['ap-20']        = sum(x for x in precision_class[:20])/20                 # AP(20)
     data['ap-50']        = sum(x for x in precision_class[:50])/50                 # AP(50)
     data['20-precision'] = sum(1 for x in revelant_classe[:20] if x == True)/20    # R-Precision
     data['50-precision'] = sum(1 for x in revelant_classe[:50] if x == True)/50    # R-Precision
     cfg['metrics']['classe'] = data
-
+    
+    # subclass metrics
     data = dict()
     data['ap-20']        = sum(x for x in precision_subclass[:20])/20                 # AP(20)
     data['ap-50']        = sum(x for x in precision_subclass[:50])/50                 # AP(50)

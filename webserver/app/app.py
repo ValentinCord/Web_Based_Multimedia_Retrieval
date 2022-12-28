@@ -64,7 +64,8 @@ def main():
         cfg['result']['names'] = result
         cfg['result']['done'] = True
 
-        save_metrics(cfg, mongo)
+        if img_path.split('/')[-1] in os.listdir('static/db/'):
+            save_metrics(cfg, mongo)
 
     if request.method == 'POST' and 'form_top_20' in request.form:
         cfg['show']['20'] = True
@@ -101,6 +102,10 @@ def logout():
 @app.route('/history')
 def history():
     return render_template('history.html', mongo = mongo)
+
+@app.route('/help')
+def help():
+    return render_template('help.html')
 
 
 def get_descriptor_form():
