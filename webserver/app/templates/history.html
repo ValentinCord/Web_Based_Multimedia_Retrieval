@@ -22,6 +22,7 @@
 
     <table class = history_table>
         <tr> 
+            <th>Type</th>
             <th>Descriptors</th>
             <th>Vector distance</th> 
             <th>Matrix distance</th> 
@@ -30,18 +31,21 @@
             <th>AP(50)</th>
             <th>20-Precision</th>
             <th>50-Precision</th>
+            <th>Search Time (sec)</th>
         </tr>
         {% for data in mongo.get_documents('HISTORY'): %}
-            <tr> 
-                <td>{{ data['descriptors'] }}</td>
-                <td>{{ data['distance_vect'] }}</td> 
-                <td>{{ data['distance_matrix'] }}</td> 
-                <td>{{ data['img_path'] }}</td> 
-                <td>{{ data['ap-20'] }}</td>
-                <td>{{ data['ap-50'] }}</td>
-                <td>{{ data['20-precision'] }}</td>
-                <td>{{ data['50-precision'] }}</td>
-            </tr>
+        <tr> 
+            <td>{{ data['type'] }}</td>
+            <td>{{ data['descriptors'] }}</td>
+            <td>{{ data['distance_vect'] }}</td> 
+            <td>{{ data['distance_matrix'] }}</td> 
+            <td>{{ data['img_path'] }}</td> 
+            <td>{{ data['ap-20'] }}</td>
+            <td>{{ data['ap-50'] }}</td>
+            <td>{{ data['20-precision'] }}</td>
+            <td>{{ data['50-precision'] }}</td>
+            <td>{{ data['time'] }}</td>
+        </tr>
         {% endfor %}
       </table>
 </body>

@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Help</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style_help.css') }}">
 </head>
+
 <body>
 
     <header>
-        <img class = nav_logo src = "static/logo.png" alt = "logo">
+        <img class=nav_logo src="static/logo.png" alt="logo">
         <nav>
-            <ul class= nav_links>
+            <ul class=nav_links>
                 <li><a href='{{ url_for('main') }}'>Search</a></li>
                 <li><a href='{{ url_for('history') }}'>History</a></li>
                 <li><a href='{{ url_for('help') }}'>Help</a></li>
@@ -18,71 +20,72 @@
         </nav>
     </header>
 
-    <h1>Welcome to the <span>Web MIR Project</span> help page </h1>
+    <div class="divider">
+        <h1>Welcome to the <span>Web MIR Project</span> help page </h1>
 
-    <h2>What is a MIR Project ?</h2>
+        <h2>What is a MIR Project ?</h2>
 
-    <p>
-    MIR stands for <span>Multimedia Information Retrieval</span>. 
-    Since the digital content explosion, the size of 
-    multimedia databases has been growing steadily.
-    A MIR project aims to make the retrieval of revelant 
-    content easier and faster for the user.
-    </p>
+        <p>
+            MIR stands for <span>Multimedia Information Retrieval</span>.
+            Since the digital content explosion, the size of
+            multimedia databases has been growing steadily.
+            A MIR project aims to make the retrieval of revelant
+            content easier and faster for the user.
+        </p>
 
-    <p>
-    A common example is Google Image: based on a text 
-    description, the search engine selects relevant images.
-    Another way to achieve this search is to use an image in input.
-    In this project, the MIR system aims to find images similar 
-    to a query image based on visual features extraction.
-    </p>
+        <p>
+            A common example is Google Image: based on a text
+            description, the search engine selects relevant images.
+            Another way to achieve this search is to use an image in input.
+            In this project, the MIR system aims to find images similar
+            to a query image based on visual features extraction.
+        </p>
 
-    <h2>How does it work ?</h2>
+        <h2>How does it work ?</h2>
 
-    <p> 
-    The MIR system is be based on the following steps:
-    <ul>
-        <li>Index all the images in the database according to a set of descriptors.</li>
-        <li>Index the query image according to the same descriptors.</li>
-        <li>Calculate the distance between the query image and the others to define a similarity order.</li>
-    </ul>  
-    </p>
+        <p>
+            The MIR system is be based on the following steps:
+        <ul>
+            <li>Index all the images in the database according to a set of descriptors.</li>
+            <li>Index the query image according to the same descriptors.</li>
+            <li>Calculate the distance between the query image and the others to define a similarity order.</li>
+        </ul>
+        </p>
 
-    <p>
-    The descriptors are the features that are extracted from the images. 
-    In this context, three types of descriptors are used: 
-    <ul>
-        <li>Color descriptors:</li>
+        <p>
+            The descriptors are the features that are extracted from the images.
+            In this context, three types of descriptors are used:
+        <ul>
+            <li>Color descriptors:</li>
             <ul>
                 <li>RGB histogram</li>
                 <li>HSV histogram</li>
             </ul>
-        <li>Shape descriptors:</li>
+            <li>Shape descriptors:</li>
             <ul>
                 <li>ORB: Oriented Fast and Rotated Brief</li>
                 <li>HOG: Histogram of Oriented Gradients</li>
                 <li>SIFT: Scale-Invariant Feature Transform</li>
                 <li>SURF: Speeded Up Robust Features</li>
             </ul>
-        <li>Texture descriptors</li>
+            <li>Texture descriptors</li>
             <ul>
                 <li>GLCM: Gray-Level Co-Occurrence Matrix</li>
                 <li>LBP: Local Binary Patterns</li>
             </ul>
-        <li>Deep Learning</li>
+            <li>Deep Learning</li>
             <ul>
                 <li>VGG16</li>
                 <li>Xception</li>
                 <li>MobileNet</li>
             </ul>
-      </ul>  
-    </p>
+        </ul>
+        </p>
 
-    <p>
-    The distance between two descriptors can be calculated using different methods:
-    <ul>
-        <li>Vector distance:</li>
+        <p>
+            The distance between two descriptors can be calculated using different methods:
+        <ul>
+            <li>Vector distance:</li>
             <ul>
                 <li>Euclidean</li>
                 <li>Correlation</li>
@@ -90,23 +93,25 @@
                 <li>Chi-Square</li>
                 <li>Bhattcharyya</li>
             </ul>
-        <li>Matrix distance:</li>  
+            <li>Matrix distance:</li>
             <ul>
                 <li>Brute Force Matcher</li>
                 <li>Flann</li>
             </ul>
-    </ul>
-    </p>
+        </ul>
+        </p>
 
-    <p>
-    At the end, the final distance between two images is the average 
-    of the normalized distances between their descriptors.
-    </p>
+        <p>
+            At the end, the final distance between two images is the average
+            of the normalized distances between their descriptors.
+        </p>
 
-    <h2>Authors</h2>
+        <h2>Authors</h2>
 
-    <p>Corduant Valentin, FPMs, BE</p>
-    <p>Vansnick Tanguy, FPMs, BE</p>
+        <p>Corduant Valentin, FPMs, BE</p>
+        <p>Vansnick Tanguy, FPMs, BE</p>
+    </div>
 
 </body>
+
 </html>

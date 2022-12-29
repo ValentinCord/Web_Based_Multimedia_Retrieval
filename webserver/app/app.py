@@ -78,7 +78,7 @@ def main():
         cfg['result']['done'] = True
 
         # if image query is in the database, analyze metrics
-        if img_path.split('/')[-1] in os.listdir('static/db/'):
+        if cfg['input']['is_in_database']:
             save_metrics(cfg, mongo)
 
     # parse top 20 form to only show top 20 results
@@ -196,7 +196,10 @@ def get_input_form():
         os.makedirs(os.path.join('static', 'img_loaded'), exist_ok = True)
         file.save(os.path.join('static', 'img_loaded', secure_filename(file.filename)))
         cfg['input']['is_selected'] = True
-        cfg['input']['img_path'] = 'static/img_loaded/' + file.filename
+        path = 'static/img_loaded/' + file.filename
+        cfg['input']['img_path'] = path
+        cfg['input']['is_in_database'] = True if file.filename in os.listdir('static/db/') else False
+
 
     # if file is not allowed, flash error
     else:

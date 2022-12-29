@@ -150,23 +150,32 @@ def recherche(mongo, img_path, descriptors, distance_vector, distance_matrix, cf
     
     # normalizing distance
     sum_of_distances = dict()
+    
     for img_path, data in distances.items():
         for desc_name, dist in data.items():
             if desc_name not in sum_of_distances:
-                sum_of_distances[desc_name] = 0
-            sum_of_distances[desc_name] += dist
+                sum_of_distances[desc_name] = dist
+            sum_of_distances[desc_name] = max(dist, sum_of_distances[desc_name])
+
     for img_path, data in distances.items():
         for desc_name, dist in data.items():
-            dist /= sum_of_distances[desc_name]
+            print('before : ', distances[img_path][desc_name])
+            distances[img_path][desc_name] /= sum_of_distances[desc_name]
+            print('after : ', distances[img_path][desc_name])
+
+    # intersection and correlation are maximized, others are minimized
+    # reverse intersection and correlation to minimize them
+    for img_path, data in distances.items():
+        for desc_name, dist in data.items():
+            if desc_name in ['intersection', 'correlation']:
+                distances[img_path][desc_name] = 1 - distances[img_path][desc_name]
+
 
     # calculating mean normalized distance from each image 
-    result = {img_path : np.mean(list(data.values())) for img_path, data in distances.items()}
+    result = {img_path : round(np.mean(list(data.values())), 3) for img_path, data in distances.items()}
 
     # sorting image following best distance
-    if distance_vector in ["correlation", "intersection"]:
-        return sorted(result.items(), key = lambda x : x[1], reverse = True) 
-    else:
-        return sorted(result.items(), key = lambda x : x[1], reverse = False) 
+    return sorted(result.items(), key = lambda x : x[1], reverse = False) 
 
 def save_metrics(cfg, mongo):
     """
@@ -284,27 +293,39 @@ def save_metrics(cfg, mongo):
     plt.savefig(save_name, format='png', dpi=600)
     plt.close()
 
-    # query's configuration
+    history = mongo.get_collection('HISTORY')
+
+    # query's class configuration
     data = dict()
     descriptors = [k for k, v in cfg['descriptors'].items() if v == True and k != 'is_selected']
+    data['type']            = 'Class'
     data['distance_vect']   = cfg['distance']['vect']
     data['distance_matrix'] = cfg['distance']['matrix']
     data['descriptors']     = "-".join(descriptors)
     data['img_path']        = cfg['input']['img_path'].split("/")[-1]
-
-    # query's metrics
-    data['ap-20']        = sum(x for x in precision_class[:20])/20                 # AP(20)
-    data['ap-50']        = sum(x for x in precision_class[:50])/50                 # AP(50)
-    data['20-precision'] = sum(1 for x in revelant_classe[:20] if x == True)/20    # R-Precision
-    data['50-precision'] = sum(1 for x in revelant_classe[:50] if x == True)/50    # R-Precision
-
-    # saving query in database
-    history = mongo.get_collection('HISTORY')
+    data['ap-20']           = round(sum(x for x in precision_class[:20])/20, 3)                 # AP(20)
+    data['ap-50']           = round(sum(x for x in precision_class[:50])/50, 3)                 # AP(50)
+    data['20-precision']    = round(sum(1 for x in revelant_classe[:20] if x == True)/20, 3)    # R-Precision
+    data['50-precision']    = round(sum(1 for x in revelant_classe[:50] if x == True)/50, 3)    # R-Precision
+    data['time']            = cfg['result']['time']
     history.insert_one(data)
 
-    # saving query's metrics in cfg to show result
+    # query's subclass configuration
+    data = dict()
+    descriptors = [k for k, v in cfg['descriptors'].items() if v == True and k != 'is_selected']
+    data['type']            = 'Subclass'
+    data['distance_vect']   = cfg['distance']['vect']
+    data['distance_matrix'] = cfg['distance']['matrix']
+    data['descriptors']     = "-".join(descriptors)
+    data['img_path']        = cfg['input']['img_path'].split("/")[-1]
+    data['ap-20']           = round(sum(x for x in precision_subclass[:20])/20, 3)                 # AP(20)
+    data['ap-50']           = round(sum(x for x in precision_subclass[:50])/50, 3)                 # AP(50)
+    data['20-precision']    = round(sum(1 for x in revelant_subclasse[:20] if x == True)/20, 3)    # R-Precision
+    data['50-precision']    = round(sum(1 for x in revelant_subclasse[:50] if x == True)/50, 3)    # R-Precision
+    data['time']            = cfg['result']['time']
+    history.insert_one(data)
 
-    # class metrics
+    # saving query's class metrics in cfg to show result
     data = dict()
     data['ap-20']        = sum(x for x in precision_class[:20])/20                 # AP(20)
     data['ap-50']        = sum(x for x in precision_class[:50])/50                 # AP(50)
@@ -312,7 +333,7 @@ def save_metrics(cfg, mongo):
     data['50-precision'] = sum(1 for x in revelant_classe[:50] if x == True)/50    # R-Precision
     cfg['metrics']['classe'] = data
     
-    # subclass metrics
+    # saving query's subclass metrics in cfg to show result
     data = dict()
     data['ap-20']        = sum(x for x in precision_subclass[:20])/20                 # AP(20)
     data['ap-50']        = sum(x for x in precision_subclass[:50])/50                 # AP(50)

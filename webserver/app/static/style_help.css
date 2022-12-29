@@ -19,6 +19,9 @@ body {
     color : white;
     background-color: black;
     height: 100vh;
+}
+
+.divider {
     width:80%;
     margin: auto;
 }

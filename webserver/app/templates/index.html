@@ -399,9 +399,9 @@
                 <div id = dist>
                     <select class = small_select name="distance_vect" >
                         <option disabled selected value> Vector distance</option>
-                        <option value = 'euclidean'>Euclidienne</option>
-                        <option value = 'correlation'>Corrélation</option>
-                        <option value = 'interesection'>Corrélation</option>
+                        <option value = 'euclidean'>Euclidean</option>
+                        <option value = 'correlation'>Correlation</option>
+                        <option value = 'interesection'>Intersection</option>
                         <option value = 'chiSquareDistance'>Chi-square</option>
                         <option value = 'bhatta'>Bhattcharyya</option>
                     </select> 
@@ -471,9 +471,9 @@
     <br>
     {% if cfg['result']['done']%}
     <div id = show>
-        <form method = 'POST' action='/'><input type = submit class = retro_btn name = 'form_top_20' value = 'Show top 20'></form>
-        <form method = 'POST' action='/'><input type = submit class = retro_btn name = 'form_top_50' value = 'Show top 50'></form>
-        <form method = 'POST' action='/'><input type = submit class = retro_btn name = 'form_rp'     value = 'Show RP curve'></form>
+        <form method = 'POST' action='/'><input type = submit class = retro_btn name = 'form_top_20' value = 'Show top-20'></form>
+        <form method = 'POST' action='/'><input type = submit class = retro_btn name = 'form_top_50' value = 'Show top-50'></form>
+        <form method = 'POST' action='/'><input type = submit class = retro_btn name = 'form_rp'     value = 'Show metrics'></form>
     </div>
     {% endif %}
     <br>
@@ -482,31 +482,54 @@
     <!-- Results -->
     <div id = 'result'>
         <div class = 'grid'>
+
         {% if cfg['show']['20'] %}
             {% for v in cfg['result']['names'][:20] %}
-                <img class = 'item' src = {{ v[0] }}>
+                <div class = box_item>
+                    <h3>Score : {{ v[1] }}</h3>
+                    <img class = 'item' src = {{ v[0] }}>
+                </div>
             {% endfor %}
+
         {% elif cfg['show']['50'] %}
             {% for v in cfg['result']['names'][:50] %}
+            <div class = box_item>
+                <h3>Score : {{ v[1] }}</h3>
                 <img class = 'item' src = {{ v[0] }}>
-            {% endfor %}
+            </div>            
+        {% endfor %}
+
         {% elif cfg['show']['rp'] %}
-            <img class = 'item_curve' src = 'static/rp_class.png'>
-            <img class = 'item_curve' src = 'static/rp_subclass.png'>
-            <div class = metrics>
-                <h3>Class metrics</h3>
-                {% for k,v in cfg['metrics']['classe'].items() %}
-                    {{ k }} : {{ v }}
-                    <br>
-                {% endfor %}    
-            </div>
-            <div class = metrics>
-                <h3>Subclass metrics</h3>
-                {% for k,v in cfg['metrics']['subclasse'].items() %}
-                    {{ k }} : {{ v }}
-                    <br>
-                {% endfor %}    
-            </div>
+            {% if cfg['input']['is_in_database'] %}
+                <img class = 'item_curve' src = 'static/rp_class.png'>
+                <img class = 'item_curve' src = 'static/rp_subclass.png'>
+
+                <table class = metrics_table>
+                    <tr> 
+                        <th>Classe AP(20)</th>
+                        <th>Classe AP(50)</th> 
+                        <th>Classe 20-Precision</th>
+                        <th>Classe 50-Precision</th>
+                        <th>SubClasse AP(20)</th>
+                        <th>SubClasse AP(50)</th> 
+                        <th>SubClasse 20-Precision</th>
+                        <th>SubClasse 50-Precision</th>
+                    </tr>
+                    <tr> 
+                        <td>{{ cfg['metrics']['classe']['ap-20'] }}</td>
+                        <td>{{ cfg['metrics']['classe']['ap-50'] }}</td> 
+                        <td>{{ cfg['metrics']['classe']['20-precision'] }}</td> 
+                        <td>{{ cfg['metrics']['classe']['50-precision'] }}</td> 
+                        <td>{{ cfg['metrics']['subclasse']['ap-20'] }}</td>
+                        <td>{{ cfg['metrics']['subclasse']['ap-50'] }}</td> 
+                        <td>{{ cfg['metrics']['subclasse']['20-precision'] }}</td> 
+                        <td>{{ cfg['metrics']['subclasse']['50-precision'] }}</td> 
+                    </tr>
+                  </table>
+
+            {% else %}
+                  <h3 class="no_metric">No metrics to show</h3>
+            {% endif %}
         {% endif %}
         </div>
     </div>

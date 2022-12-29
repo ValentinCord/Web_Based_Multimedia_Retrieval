@@ -48,11 +48,19 @@ body {
     justify-content: center;
     align-items: center;
     align-content: center;
+    margin : 80%;
+    margin : auto;
 }
 
 .item {
     height: 200px;
-    margin: 10px
+    margin: 10px;
+}
+
+.box_item  h3{
+    margin: auto;
+    text-align: center;
+    padding-top: 10px;
 }
 
 .item_curve {
@@ -194,4 +202,28 @@ header {
 
 .nav_links li a:hover{
     color: #00ffff;
+}
+
+.metrics_table {
+    border-collapse: collapse;
+    width: 90%;
+    margin: auto;
+  }
+  
+.metrics_table td, .history_table th {
+    border: 1px solid rgb(0, 0, 0);
+    padding: 8px;
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+    text-align: center;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.no_metric {
+    filter : drop-shadow(0 0 15px red) drop-shadow(0 0 50px red) contrast(2) brightness(2);
+    color : red;
+    margin: auto;
+    padding-top: 12px;
+    padding-bottom: 12px;
 }
