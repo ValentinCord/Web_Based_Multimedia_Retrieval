@@ -16,7 +16,7 @@ def distance_matching(cfg, distance_vector, distance_matrix, descriptors):
         distance_vector_func = interesection
 
     # matching matrix distance name with function
-    elif distance_matrix == 'flann':
+    if distance_matrix == 'flann':
         distance_matrix_func = flann
     elif distance_matrix == 'bruteForceMatching':
         distance_matrix_func = bruteForceMatching
