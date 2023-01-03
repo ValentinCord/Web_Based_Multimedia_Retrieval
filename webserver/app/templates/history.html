@@ -29,8 +29,7 @@
             <th>Image path</th> 
             <th>AP(20)</th>
             <th>AP(50)</th>
-            <th>20-Precision</th>
-            <th>50-Precision</th>
+            <th>R-Precision</th>
             <th>Search Time (sec)</th>
         </tr>
         {% for data in mongo.get_documents('HISTORY'): %}
@@ -42,8 +41,7 @@
             <td>{{ data['img_path'] }}</td> 
             <td>{{ data['ap-20'] }}</td>
             <td>{{ data['ap-50'] }}</td>
-            <td>{{ data['20-precision'] }}</td>
-            <td>{{ data['50-precision'] }}</td>
+            <td>{{ data['r-precision'] }}</td>
             <td>{{ data['time'] }}</td>
         </tr>
         {% endfor %}
