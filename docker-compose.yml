@@ -10,7 +10,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=admin
 
   mongo-seed:
-    build: ./mongo-seed
+    image: valentincorduant/seeder:v0.1
     depends_on:
       - mongodb
     environment:
@@ -19,7 +19,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=admin
 
   webserver:
-    build : ./webserver
+    image : valentincorduant/webserver:v0.1
     ports:
       - 5000:5000
     depends_on:

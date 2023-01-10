@@ -10,13 +10,13 @@ from skimage.feature import graycomatrix, local_binary_pattern, graycoprops
 
 def main():
 
-    time_SIFT = generate(generateSIFT, 'static/db', 'data_import/SIFT.json')
-    time_HSV  = generate(generateHistogramme_HSV, 'static/db', 'data_import/HSV.json')
-    time_HOG  = generate(generateHOG, 'static/db', 'data_import/HOG.json')
-    time_LBP  = generate(generateLBP, 'static/db', 'data_import/LBP.json')
-    time_ORB  = generate(generateORB, 'static/db', 'data_import/ORB.json')
-    time_BGR  = generate(generateHistogramme_Color, 'static/db', 'data_import/BGR.json')
-    time_GLCM = generate(generateGLCM, 'static/db', 'data_import/GLCM.json')
+    time_SIFT = generate(generateSIFT, 'webserver/app/static/db', 'SIFT.json')
+    time_HSV  = generate(generateHistogramme_HSV, 'webserver/app/static/db', 'HSV.json')
+    time_HOG  = generate(generateHOG, 'webserver/app/static/db', 'HOG.json')
+    time_LBP  = generate(generateLBP, 'webserver/app/static/db', 'LBP.json')
+    time_ORB  = generate(generateORB, 'webserver/app/static/db', 'ORB.json')
+    time_BGR  = generate(generateHistogramme_Color, 'webserver/app/static/db', 'BGR.json')
+    time_GLCM = generate(generateGLCM, 'webserver/app/static/db', 'GLCM.json')
 
     with open('benchmark.txt', 'w') as fin:
         fin.write('Computation times for descriptors benchmark\n')

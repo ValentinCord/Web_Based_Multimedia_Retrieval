@@ -1,6 +1,7 @@
 import os
+import hashlib
 
-from flask import Flask, render_template, request, redirect, flash, session
+from flask import Flask, render_template, request, redirect, flash, session, url_for
 from werkzeug.utils import secure_filename
 from time import time
 
@@ -104,13 +105,33 @@ def main():
 
 @app.route('/login', methods = ['POST'])
 def login():
+    if request.method == 'POST' and 'form_register' in request.form:
+        return render_template('register.html')
     if request.method == 'POST' and 'form_login' in request.form:
-        # check if credentials are correct
-        # if yes, set session to logged in
-        if request.form.get('username') == 'admin' and request.form.get('password') == 'admin':
+        pwd = request.form.get('password')
+        hash_pwd = hashlib.md5(pwd.encode())
+        collection = mongo.users
+        if collection.find_one({"username": request.form.get('username'), "password": hash_pwd.hexdigest()}):
             session['logged_in'] = True
         else:
             flash('[LOGIN] Wrong credentials')
+    return main()
+
+@app.route('/register', methods=['POST'])
+def register():
+    if request.method == 'POST' and 'form_register' in request.form:
+        pwd = request.form.get('password')
+        pwd_again = request.form.get('password_again')
+        if pwd != pwd_again:
+            flash('Wrong password')
+            return render_template('register.html')
+        hash_pwd = hashlib.md5(pwd.encode())
+        collection = mongo.users
+        if collection.find_one({"username": request.form.get('username')}):
+            flash('User already exists')
+            return render_template('register.html')
+        else:
+            collection.insert_one({"username": request.form.get('username'), "password": hash_pwd.hexdigest()})
     return main()
 
 @app.route('/logout')

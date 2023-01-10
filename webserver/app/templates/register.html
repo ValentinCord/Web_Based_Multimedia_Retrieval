@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Log In</title>
+    <title>Register</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style_login.css') }}">
 </head>
 
@@ -11,19 +11,16 @@
     <p>You are logged in</p>
     {% else %}
     <h1>WEB MIR PROJECT</h1>
-    <form method='POST' action='/login'>
+    <form method='POST' action='/register'>
         <p><input class='data' type='username' name='username' autocomplete="off" placeholder='Username'></p>
         <p><input class='data' type='password' name='password' autocomplete="off" placeholder='Password'></p>
-        <p><input class='btn' type='submit' value='Login' name='form_login'></p>
+        <p><input class='data' type='password' name='password_again' autocomplete="off" placeholder='Password'></p>
+        <p><input class='btn' type='submit' value='Register' name='form_register'></p>
     </form>
     {% endif %}
 
     {% if get_flashed_messages() %}
     <div>{% for mesg in get_flashed_messages() %}<p class='flash'>{{ mesg }}</p>{% endfor %}</div>
     {% endif %}
-
-    <form method='POST' action='/login'>
-        <p><input class='btn' type='submit' value='Register' name='form_register'></p>
-    </form>
 
 </html>

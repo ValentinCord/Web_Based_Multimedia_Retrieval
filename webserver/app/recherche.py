@@ -35,6 +35,9 @@ def extractReqFeatures(fileName, algo_choice):
             return np.concatenate((histH, np.concatenate((histS,histV),axis=None)), axis=None)
 
         elif algo_choice == 'SIFT': 
+            w, h, c = img.shape
+            new_size = (int(w*0.3), int(h*0.3))
+            img = cv2.resize(img, new_size)
             sift = cv2.SIFT_create()
             kps , vect_features = sift.detectAndCompute(img,None)
             return vect_features
