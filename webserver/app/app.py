@@ -28,7 +28,9 @@ cfg = {
     },
     'result' : {},
     'show' : {},
-    'vector' : ['BGR', 'HSV', 'GLCM', 'HOG', 'LBP', 'VGG16', 'XCEPTION', 'MOBILENET'],
+    'vector' : ['BGR', 'HSV', 'GLCM', 'HOG', 'LBP', 'VGG16_false', 'XCEPTION_false', 'MOBILENET_false', 'XCEPTION_true', 
+                'VGG16_false_pca', 'XCEPTION_false_pca', 'MOBILENET_false_pca', 'XCEPTION_true_pca', 
+                'VGG16_false_rmac', 'XCEPTION_false_rmac', 'MOBILENET_false_rmac', 'XCEPTION_true_rmac'],
     'matrix' : ['SIFT', 'ORB'],
     'metrics' : {
         'classe': {},
@@ -162,9 +164,20 @@ def get_descriptor_form():
     cfg['descriptors']['HSV']           = True if request.form.get('HSV')       != None else False
     cfg['descriptors']['LBP']           = True if request.form.get('LBP')       != None else False
     cfg['descriptors']['ORB']           = True if request.form.get('ORB')       != None else False
-    cfg['descriptors']['VGG16']         = True if request.form.get('VGG16')     != None else False
-    cfg['descriptors']['XCEPTION']      = True if request.form.get('XCEPTION')  != None else False
-    cfg['descriptors']['MOBILENET']     = True if request.form.get('MOBILENET') != None else False
+    cfg['descriptors']['VGG16_false']         = True if request.form.get('VGG16_false')     != None else False
+    cfg['descriptors']['XCEPTION_false']      = True if request.form.get('XCEPTION_false')  != None else False
+    cfg['descriptors']['XCEPTION_true']       = True if request.form.get('XCEPTION_true')   != None else False
+    cfg['descriptors']['MOBILENET_false']     = True if request.form.get('MOBILENET_false') != None else False
+    
+    cfg['descriptors']['VGG16_false_pca']         = True if request.form.get('VGG16_false_pca')     != None else False
+    cfg['descriptors']['XCEPTION_false_pca']      = True if request.form.get('XCEPTION_false_pca')  != None else False
+    cfg['descriptors']['XCEPTION_true_pca']       = True if request.form.get('XCEPTION_true_pca')   != None else False
+    cfg['descriptors']['MOBILENET_false_pca']     = True if request.form.get('MOBILENET_false_pca') != None else False
+    
+    cfg['descriptors']['VGG16_false_rmac']         = True if request.form.get('VGG16_false_rmac')     != None else False
+    cfg['descriptors']['XCEPTION_false_rmac']      = True if request.form.get('XCEPTION_false_rmac')  != None else False
+    cfg['descriptors']['XCEPTION_true_rmac']       = True if request.form.get('XCEPTION_true_rmac')   != None else False
+    cfg['descriptors']['MOBILENET_false_rmac']     = True if request.form.get('MOBILENET_false_rmac') != None else False
 
     # check if at least one descriptor is selected
     cfg['descriptors']['is_selected'] = any(cfg['descriptors'].values())

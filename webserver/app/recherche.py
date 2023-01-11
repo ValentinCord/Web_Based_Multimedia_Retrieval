@@ -3,10 +3,14 @@ import os
 import cv2
 import numpy as np
 import math
+import pickle as pk
 
 from skimage.feature import graycomatrix, graycoprops, local_binary_pattern
 from distance import distance_matching
 import matplotlib.pyplot as plt
+
+from sklearn.decomposition import PCA
+from sklearn import preprocessing
 
 from keras_preprocessing.image import load_img, img_to_array
 from keras.applications.vgg16 import VGG16, preprocess_input #224*224
@@ -90,7 +94,7 @@ def extractReqFeatures(fileName, algo_choice):
             hog = cv2.HOGDescriptor(winSize,blockSize,blockStride,cellSize,nBins)
             return hog.compute(image)
 
-        elif algo_choice == 'VGG16':
+        elif algo_choice == 'VGG16_false':
             model = VGG16(include_top = False, weights ='imagenet', input_shape = (224, 224, 3), pooling = 'avg')
             img = load_img(fileName, target_size = (224, 224))
             img = img_to_array(img)
@@ -100,7 +104,21 @@ def extractReqFeatures(fileName, algo_choice):
             feature = np.array(feature[0])
             return feature
 
-        elif algo_choice == 'XCEPTION':
+        elif algo_choice == 'VGG16_false_pca':
+            model = VGG16(include_top = False, weights ='imagenet', input_shape = (224, 224, 3), pooling = 'avg')
+            img = load_img(fileName, target_size = (224, 224))
+            img = img_to_array(img)
+            img = img.reshape((1, img.shape[0], img.shape[1], img.shape[2]))
+            img = preprocess_input(img)
+            feature = model.predict(img)
+            feature = np.array(feature[0])
+
+            pca = pk.load(open("static/VGG16_false_pca.pkl",'rb')) 
+            # feature = preprocessing.scale(feature)
+            pca_data = pca.transform(feature)
+            return pca_data
+
+        elif algo_choice == 'XCEPTION_false':
             model = Xception(include_top = False, weights ='imagenet', input_shape = (299, 299, 3), pooling = 'avg')
             img = load_img(fileName, target_size = (299, 299))
             img = img_to_array(img)
@@ -110,7 +128,45 @@ def extractReqFeatures(fileName, algo_choice):
             feature = np.array(feature[0])
             return feature
 
-        elif algo_choice == 'MOBILENET':
+        elif algo_choice == 'XCEPTION_false_pca':
+            model = Xception(include_top = False, weights ='imagenet', input_shape = (299, 299, 3), pooling = 'avg')
+            img = load_img(fileName, target_size = (299, 299))
+            img = img_to_array(img)
+            img = img.reshape((1, img.shape[0], img.shape[1], img.shape[2]))
+            img = preprocess_input(img)
+            feature = model.predict(img)
+            feature = np.array(feature[0])
+
+            pca = pk.load(open("static/XCEPTION_false_pca.pkl",'rb')) 
+            # feature = preprocessing.scale(feature)
+            pca_data = pca.transform(feature)
+            return pca_data
+
+        elif algo_choice == 'XCEPTION_true':
+            model = Xception(include_top = True, weights ='imagenet', input_shape = (299, 299, 3), pooling = 'avg')
+            img = load_img(fileName, target_size = (299, 299))
+            img = img_to_array(img)
+            img = img.reshape((1, img.shape[0], img.shape[1], img.shape[2]))
+            img = preprocess_input(img)
+            feature = model.predict(img)
+            feature = np.array(feature[0])
+            return feature
+
+        elif algo_choice == 'XCEPTION_true_pca':
+            model = Xception(include_top = True, weights ='imagenet', input_shape = (299, 299, 3), pooling = 'avg')
+            img = load_img(fileName, target_size = (299, 299))
+            img = img_to_array(img)
+            img = img.reshape((1, img.shape[0], img.shape[1], img.shape[2]))
+            img = preprocess_input(img)
+            feature = model.predict(img)
+            feature = np.array(feature[0])
+
+            pca = pk.load(open("static/XCEPTION_true_pca.pkl",'rb')) 
+            # feature = preprocessing.scale(feature)
+            pca_data = pca.transform(feature)
+            return pca_data
+
+        elif algo_choice == 'MOBILENET_false':
             model = MobileNet(include_top = False, weights ='imagenet', input_shape = (224, 224, 3), pooling = 'avg')
             img = load_img(fileName, target_size = (224, 224))
             img = img_to_array(img)
@@ -119,6 +175,21 @@ def extractReqFeatures(fileName, algo_choice):
             feature = model.predict(img)
             feature = np.array(feature[0])
             return feature
+
+        elif algo_choice == 'MOBILENET_false_pca':
+            model = MobileNet(include_top = False, weights ='imagenet', input_shape = (224, 224, 3), pooling = 'avg')
+            img = load_img(fileName, target_size = (224, 224))
+            img = img_to_array(img)
+            img = img.reshape((1, img.shape[0], img.shape[1], img.shape[2]))
+            img = preprocess_input(img)
+            feature = model.predict(img)
+            feature = np.array(feature[0])
+
+            pca = pk.load(open("static/MOBILENET_false_pca.pkl",'rb')) 
+            # feature = preprocessing.scale(feature)
+            pca_data = pca.transform(feature)
+            return pca_data
+
 
 def recherche(mongo, img_path, descriptors, distance_vector, distance_matrix, cfg):
     """
