@@ -317,7 +317,7 @@ def save_metrics(cfg, mongo):
     subclasse_input = input_path.split('/')[2].split('_')[1]
 
     # check if the result is correctly predicted in terme of class and subclass
-    for result in cfg['result']['names'][:50]:
+    for result in cfg['result']['names']:
         classe = result[0].split('/')[2].split('_')[0]
         subclasse = result[0].split('/')[2].split('_')[1]
         revelant_classe.append(True) if classe_input == classe else revelant_classe.append(False)
@@ -380,7 +380,7 @@ def save_metrics(cfg, mongo):
     precision_subclass = []
 
     # calculating precision and recall for 50 images
-    for i in range(0, 50):
+    for i in range(len(revelant_classe)):
         j = i
         val_classe = 0
         val_subclasse = 0   
@@ -432,7 +432,7 @@ def save_metrics(cfg, mongo):
     data['ap-20']           = round(sum(x for x in precision_class[:20])/20, 3)                
     data['ap-50']           = round(sum(x for x in precision_class[:50])/50, 3)                
     r_class = num_class[classe_input]
-    data['r-precision'] = sum(revelant_classe[:r_class])/r_class     
+    data['r-precision'] = round(sum(revelant_classe[:r_class])/r_class, 3)     
     data['time']            = cfg['result']['time']
     history.insert_one(data)
 
@@ -447,7 +447,7 @@ def save_metrics(cfg, mongo):
     data['ap-20']           = round(sum(x for x in precision_subclass[:20])/20, 3)           
     data['ap-50']           = round(sum(x for x in precision_subclass[:50])/50, 3) 
     r_subclass = num_subclass[classe_input][subclasse_input]
-    data['r-precision'] = sum(revelant_classe[:r_subclass])/r_subclass    
+    data['r-precision'] = round(sum(revelant_classe[:r_subclass])/r_subclass, 3)    
     data['time']            = cfg['result']['time']
     history.insert_one(data)
 
@@ -456,7 +456,7 @@ def save_metrics(cfg, mongo):
     data['ap-20']        = sum(x for x in precision_class[:20])/20        
     data['ap-50']        = sum(x for x in precision_class[:50])/50      
     r_class = num_class[classe_input]
-    data['r-precision'] = sum(revelant_classe[:r_class])/r_class    
+    data['r-precision'] = round(sum(revelant_classe[:r_class])/r_class, 3)    
     cfg['metrics']['classe'] = data
     
     # saving query's subclass metrics in cfg to show result
@@ -464,5 +464,5 @@ def save_metrics(cfg, mongo):
     data['ap-20']        = sum(x for x in precision_subclass[:20])/20      
     data['ap-50']        = sum(x for x in precision_subclass[:50])/50     
     r_subclass = num_subclass[classe_input][subclasse_input]
-    data['r-precision'] = sum(revelant_classe[:r_subclass])/r_subclass  
+    data['r-precision'] = round(sum(revelant_classe[:r_subclass])/r_subclass, 3)  
     cfg['metrics']['subclasse'] = data
