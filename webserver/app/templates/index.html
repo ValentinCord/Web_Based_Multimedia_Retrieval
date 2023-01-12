@@ -386,24 +386,24 @@
                     </div>
                     <div class = desc-item>
                         <h3>Deep Learning</h3>
-                        <div><input type="checkbox" name="VGG16_false" /><label>VGG16 - top false</label></div>
-                        <div><input type="checkbox" name="XCEPTION_true" /><label>Xception - top true</label></div>
-                        <div><input type="checkbox" name="XCEPTION_false" /><label>Xception - top false</label></div>
-                        <div><input type="checkbox" name="MOBILENET_false" /><label>MobileNet - top false</label></div>
+                        <div><input type="checkbox" name="VGG16_false" /><label>VGG16</label></div>
+                        <div><input type="checkbox" name="XCEPTION_true" /><label>LastXception</label></div>
+                        <div><input type="checkbox" name="XCEPTION_false" /><label>Xception</label></div>
+                        <div><input type="checkbox" name="MOBILENET_false" /><label>MobileNet</label></div>
                     </div>
                     <div class = desc-item>
                         <h3>DL PCA</h3>
-                        <div><input type="checkbox" name="VGG16_false_pca" /><label>VGG16 - top false</label></div>
-                        <div><input type="checkbox" name="XCEPTION_true_pca" /><label>Xception - top true</label></div>
-                        <div><input type="checkbox" name="XCEPTION_false_pca" /><label>Xception - top false</label></div>
-                        <div><input type="checkbox" name="MOBILENET_false_pca" /><label>MobileNet - top false</label></div>
+                        <div><input type="checkbox" name="VGG16_false_pca" /><label>VGG16</label></div>
+                        <div><input type="checkbox" name="XCEPTION_true_pca" /><label>LastXception</label></div>
+                        <div><input type="checkbox" name="XCEPTION_false_pca" /><label>Xception</label></div>
+                        <div><input type="checkbox" name="MOBILENET_false_pca" /><label>MobileNet</label></div>
                     </div>
                     <div class = desc-item>
                         <h3>DL RMAC</h3>
-                        <div><input type="checkbox" name="VGG16_false_rmac" /><label>VGG16 - top false</label></div>
-                        <div><input type="checkbox" name="XCEPTION_true_rmac" /><label>Xception - top true</label></div>
-                        <div><input type="checkbox" name="XCEPTION_false_rmac" /><label>Xception - top false</label></div>
-                        <div><input type="checkbox" name="MOBILENET_false_rmac" /><label>MobileNet - top false</label></div>
+                        <div><input type="checkbox" name="VGG16_false_rmac" /><label>VGG16</label></div>
+                        <div><input type="checkbox" name="XCEPTION_true_rmac" /><label>LastXception</label></div>
+                        <div><input type="checkbox" name="XCEPTION_false_rmac" /><label>Xception</label></div>
+                        <div><input type="checkbox" name="MOBILENET_false_rmac" /><label>MobileNet</label></div>
                     </div>
                     <input class = retro_btn type="submit" name = 'form_desc' value="Submit"/>
                 </div>
@@ -523,8 +523,7 @@
                     <tr> 
                         <th>Classe AP(20)</th>
                         <th>Classe AP(50)</th> 
-                        <th>Classe 20-Precision</th>
-                        <th>Classe 50-Precision</th>
+                        <th>Classe r-Precision</th>
                         <th>SubClasse AP(20)</th>
                         <th>SubClasse AP(50)</th> 
                         <th>SubClasse r-Precision</th>
@@ -532,8 +531,7 @@
                     <tr> 
                         <td>{{ cfg['metrics']['classe']['ap-20'] }}</td>
                         <td>{{ cfg['metrics']['classe']['ap-50'] }}</td> 
-                        <td>{{ cfg['metrics']['classe']['20-precision'] }}</td> 
-                        <td>{{ cfg['metrics']['classe']['50-precision'] }}</td> 
+                        <td>{{ cfg['metrics']['classe']['r-precision'] }}</td> 
                         <td>{{ cfg['metrics']['subclasse']['ap-20'] }}</td>
                         <td>{{ cfg['metrics']['subclasse']['ap-50'] }}</td> 
                         <td>{{ cfg['metrics']['subclasse']['r-precision'] }}</td> 
@@ -545,6 +543,8 @@
             {% endif %}
         {% endif %}
         </div>
+        <br>
+        <br>
     </div>
 
   </body>

@@ -14,7 +14,7 @@ class Mongo():
         self.db = self.client.db
         self.history = self.db.HISTORY
         self.users = self.db.USERS
-        self.users.insert_one({"username": 'admin', "password": 'admin'})
+        # self.users.insert_one({'username': 'admin', 'password': 'admin'})
 
     def get_collection(self, collection_name):
         """

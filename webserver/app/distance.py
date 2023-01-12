@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import math
 
-def distance_matching(cfg, distance_vector, distance_matrix, descriptors):
+def distance_matching(session, distance_vector, distance_matrix, descriptors):
     # matching vector distance name with function
     if distance_vector == 'euclidean':
         distance_vector_func = euclidean
@@ -24,7 +24,7 @@ def distance_matching(cfg, distance_vector, distance_matrix, descriptors):
     # matching of descriptors with right distance
     distance_func = dict()
     for desc_name in descriptors:
-        distance_func[desc_name] = distance_vector_func if desc_name in cfg['vector'] else distance_matrix_func
+        distance_func[desc_name] = distance_vector_func if desc_name in session['vector'] else distance_matrix_func
 
     return distance_func
 

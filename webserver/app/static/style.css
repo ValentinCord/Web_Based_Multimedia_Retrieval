@@ -79,6 +79,10 @@ body {
     width: 500px;
 }
 
+.desc-item {
+    padding: 10px;
+}
+
 #dist {
     display: flex;
     justify-content: space-between;

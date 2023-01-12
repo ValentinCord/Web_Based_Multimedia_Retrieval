@@ -1,59 +1,36 @@
 import os
 import hashlib
-
-from flask import Flask, render_template, request, redirect, flash, session, url_for
+from flask import Flask, render_template, request, redirect, flash, url_for
 from werkzeug.utils import secure_filename
 from time import time
-
 from recherche import *
 from mongo import Mongo
 
-# Flask app initialization
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_KEY')
 
-# Mongo initialization
 mongo = Mongo()
 
-# Configuration initialization
-cfg = {
-    'descriptors' : {
-        'is_selected' : False,
-    },
-    'distance' : {
-        'is_selected' : False,
-    },
-    'input' : {
-        'is_selected' : False,
-    },
-    'result' : {},
-    'show' : {},
-    'vector' : ['BGR', 'HSV', 'GLCM', 'HOG', 'LBP', 'VGG16_false', 'XCEPTION_false', 'MOBILENET_false', 'XCEPTION_true', 
-                'VGG16_false_pca', 'XCEPTION_false_pca', 'MOBILENET_false_pca', 'XCEPTION_true_pca', 
-                'VGG16_false_rmac', 'XCEPTION_false_rmac', 'MOBILENET_false_rmac', 'XCEPTION_true_rmac'],
-    'matrix' : ['SIFT', 'ORB'],
-    'metrics' : {
-        'classe': {},
-        'subclasse': {}
-    }
-}
+cfg = {'descriptors' : {'is_selected' : True, 'XCEPTION_false_rmac' : True},
+       'distance' : {'is_selected' : True, 'vect' : 'euclidean', 'matrix' : 'bruteForceMatching'},
+       'input' : {'is_selected' : False,},
+        'result' : {},
+        'show' : {},
+        'vector' : ['BGR', 'HSV', 'GLCM', 'HOG', 'LBP', 'VGG16_false', 'XCEPTION_false', 'MOBILENET_false', 'XCEPTION_true', 'VGG16_false_pca', 'XCEPTION_false_pca', 'MOBILENET_false_pca', 'XCEPTION_true_pca', 'VGG16_false_rmac', 'XCEPTION_false_rmac', 'MOBILENET_false_rmac', 'XCEPTION_true_rmac'],
+        'matrix' : ['SIFT', 'ORB'],
+        'metrics' : {'classe': {},'subclasse': {}}}
 
 @app.route('/', methods = ['GET', 'POST'])
 def main():
 
     # if not logged in, redirect to login page
-    if not session.get('logged_in'):
+    if not cfg.get('logged_in'):
         return render_template('login.html')
 
-    # parse descriptor form
     if request.method == 'POST' and 'form_desc' in request.form:
         get_descriptor_form()
-    
-    # parse distance form
     if request.method == 'POST' and 'form_dist' in request.form:
         get_distance_form()
-
-    # parse input form
     if request.method == 'POST' and 'form_input_image' in request.form:
         get_input_form()
 
@@ -71,32 +48,24 @@ def main():
         distance_vect = cfg['distance']['vect']
         distance_matrix = cfg['distance']['matrix']
 
-        # launch indexation search
         start = time()
-        result = recherche(mongo, img_path, descriptors, distance_vect, distance_matrix, cfg)
-        
-        # save results
-        cfg['result']['time'] = round(time() - start, 3)
-        cfg['result']['names'] = result
-        cfg['result']['done'] = True
+        result = recherche(mongo, img_path, descriptors, distance_vect, distance_matrix, cfg) 
+        cfg['result']['time'] = int(time() - start) # time in seconds
+        cfg['result']['names'] = result # list of names of the ordered best matches
+        cfg['result']['done'] = True  # search is done
 
         # if image query is in the database, analyze metrics
         if cfg['input']['is_in_database']:
             save_metrics(cfg, mongo)
 
-    # parse top 20 form to only show top 20 results
     if request.method == 'POST' and 'form_top_20' in request.form:
         cfg['show']['20'] = True
         cfg['show']['50'] = False
         cfg['show']['rp'] = False
-
-    # parse top 50 form to only show top 50 results
     if request.method == 'POST' and 'form_top_50' in request.form:
         cfg['show']['20'] = False
         cfg['show']['50'] = True
         cfg['show']['rp'] = False
-
-    # parse rp form to only show rp results
     if request.method == 'POST' and 'form_rp' in request.form:
         cfg['show']['20'] = False
         cfg['show']['50'] = False
@@ -109,47 +78,46 @@ def main():
 def login():
     if request.method == 'POST' and 'form_register' in request.form:
         return render_template('register.html')
+
     if request.method == 'POST' and 'form_login' in request.form:
+        user = request.form.get('username')
         pwd = request.form.get('password')
         hash_pwd = hashlib.md5(pwd.encode())
-        collection = mongo.users
-        if collection.find_one({"username": request.form.get('username'), "password": hash_pwd.hexdigest()}):
-            session['logged_in'] = True
+        if mongo.users.find_one({'username': user, 'password': hash_pwd.hexdigest()}):
+            cfg['logged_in'] = True
         else:
             flash('[LOGIN] Wrong credentials')
-    return main()
+    return redirect(url_for('main'))
 
 @app.route('/register', methods=['POST'])
 def register():
     if request.method == 'POST' and 'form_register' in request.form:
+        user = request.form.get('username')
         pwd = request.form.get('password')
         pwd_again = request.form.get('password_again')
         if pwd != pwd_again:
             flash('Wrong password')
             return render_template('register.html')
-        hash_pwd = hashlib.md5(pwd.encode())
-        collection = mongo.users
-        if collection.find_one({"username": request.form.get('username')}):
-            flash('User already exists')
-            return render_template('register.html')
+        # elif mongo.users.find_one({'username': user}):
+        #     flash('User already exists')
+        #     return render_template('register.html')
         else:
-            collection.insert_one({"username": request.form.get('username'), "password": hash_pwd.hexdigest()})
-    return main()
+            hash_pwd = hashlib.md5(pwd.encode())
+            mongo.users.insert_one({'username': user, 'password': hash_pwd.hexdigest()})
+            cfg['logged_in'] = True
+    return redirect(url_for('main'))
 
 @app.route('/logout')
 def logout():
-    # set session to logged out
-    session['logged_in'] = False
+    cfg['logged_in'] = False
     return main()
 
 @app.route('/history')
 def history():
-    # return history page
     return render_template('history.html', mongo = mongo)
 
 @app.route('/help')
 def help():
-    # return help page
     return render_template('help.html')
 
 
@@ -164,6 +132,7 @@ def get_descriptor_form():
     cfg['descriptors']['HSV']           = True if request.form.get('HSV')       != None else False
     cfg['descriptors']['LBP']           = True if request.form.get('LBP')       != None else False
     cfg['descriptors']['ORB']           = True if request.form.get('ORB')       != None else False
+   
     cfg['descriptors']['VGG16_false']         = True if request.form.get('VGG16_false')     != None else False
     cfg['descriptors']['XCEPTION_false']      = True if request.form.get('XCEPTION_false')  != None else False
     cfg['descriptors']['XCEPTION_true']       = True if request.form.get('XCEPTION_true')   != None else False

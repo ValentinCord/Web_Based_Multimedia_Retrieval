@@ -4,14 +4,14 @@ import cv2
 import numpy as np
 import math
 import pickle as pk
-
+from rmac import RMAC
 from skimage.feature import graycomatrix, graycoprops, local_binary_pattern
 from distance import distance_matching
 import matplotlib.pyplot as plt
-
 from sklearn.decomposition import PCA
 from sklearn import preprocessing
-
+from keras.models import Model
+from keras.layers import Dense, Lambda
 from keras_preprocessing.image import load_img, img_to_array
 from keras.applications.vgg16 import VGG16, preprocess_input #224*224
 from keras.applications.xception import Xception, preprocess_input, decode_predictions #299*299
@@ -112,11 +112,24 @@ def extractReqFeatures(fileName, algo_choice):
             img = preprocess_input(img)
             feature = model.predict(img)
             feature = np.array(feature[0])
-
             pca = pk.load(open("static/VGG16_false_pca.pkl",'rb')) 
-            # feature = preprocessing.scale(feature)
-            pca_data = pca.transform(feature)
+            pca_data = pca.transform([feature])
             return pca_data
+
+        elif algo_choice == 'VGG16_false_rmac':
+            base_model = VGG16(include_top = False, weights ='imagenet', input_shape = (224, 224, 3), pooling = 'avg')
+            base_out = base_model.get_layer('block5_conv3').output
+            rmac = RMAC(base_out.shape, levels=5, norm_fm=True, sum_fm=True)    
+            rmac_layer = Lambda(rmac.rmac, input_shape=base_model.output_shape, name="rmac_"+'block5_conv3')
+            out = rmac_layer(base_out)
+            model = Model(base_model.input, out)
+            image = load_img(fileName, target_size=(224, 224))
+            image = img_to_array(image)
+            image = image.reshape((1, image.shape[0], image.shape[1], image.shape[2]))
+            image = preprocess_input(image)
+            feature = model.predict(image)
+            feature = np.array(feature[0])
+            return feature
 
         elif algo_choice == 'XCEPTION_false':
             model = Xception(include_top = False, weights ='imagenet', input_shape = (299, 299, 3), pooling = 'avg')
@@ -136,11 +149,24 @@ def extractReqFeatures(fileName, algo_choice):
             img = preprocess_input(img)
             feature = model.predict(img)
             feature = np.array(feature[0])
-
             pca = pk.load(open("static/XCEPTION_false_pca.pkl",'rb')) 
-            # feature = preprocessing.scale(feature)
-            pca_data = pca.transform(feature)
+            pca_data = pca.transform([feature])
             return pca_data
+        
+        elif algo_choice == 'XCEPTION_false_rmac':
+            base_model = Xception(include_top = False, weights ='imagenet', input_shape = (299, 299, 3), pooling = 'avg')
+            base_out = base_model.get_layer('block14_sepconv2').output
+            rmac = RMAC(base_out.shape, levels=5, norm_fm=True, sum_fm=True)    
+            rmac_layer = Lambda(rmac.rmac, input_shape=base_model.output_shape, name="rmac_"+'block14_sepconv2')
+            out = rmac_layer(base_out)
+            model = Model(base_model.input, out)
+            image = load_img(fileName, target_size=(299, 299))
+            image = img_to_array(image)
+            image = image.reshape((1, image.shape[0], image.shape[1], image.shape[2]))
+            image = preprocess_input(image)
+            feature = model.predict(image)
+            feature = np.array(feature[0])
+            return feature
 
         elif algo_choice == 'XCEPTION_true':
             model = Xception(include_top = True, weights ='imagenet', input_shape = (299, 299, 3), pooling = 'avg')
@@ -160,11 +186,24 @@ def extractReqFeatures(fileName, algo_choice):
             img = preprocess_input(img)
             feature = model.predict(img)
             feature = np.array(feature[0])
-
             pca = pk.load(open("static/XCEPTION_true_pca.pkl",'rb')) 
-            # feature = preprocessing.scale(feature)
-            pca_data = pca.transform(feature)
+            pca_data = pca.transform([feature])
             return pca_data
+
+        elif algo_choice == 'XCEPTION_true_rmac':
+            base_model = Xception(include_top = True, weights ='imagenet', input_shape = (299, 299, 3), pooling = 'avg')
+            base_out = base_model.get_layer('block14_sepconv2').output
+            rmac = RMAC(base_out.shape, levels=5, norm_fm=True, sum_fm=True)    
+            rmac_layer = Lambda(rmac.rmac, input_shape=base_model.output_shape, name="rmac_"+'block14_sepconv2')
+            out = rmac_layer(base_out)
+            model = Model(base_model.input, out)
+            image = load_img(fileName, target_size=(299, 299))
+            image = img_to_array(image)
+            image = image.reshape((1, image.shape[0], image.shape[1], image.shape[2]))
+            image = preprocess_input(image)
+            feature = model.predict(image)
+            feature = np.array(feature[0])
+            return feature
 
         elif algo_choice == 'MOBILENET_false':
             model = MobileNet(include_top = False, weights ='imagenet', input_shape = (224, 224, 3), pooling = 'avg')
@@ -184,11 +223,24 @@ def extractReqFeatures(fileName, algo_choice):
             img = preprocess_input(img)
             feature = model.predict(img)
             feature = np.array(feature[0])
-
             pca = pk.load(open("static/MOBILENET_false_pca.pkl",'rb')) 
-            # feature = preprocessing.scale(feature)
-            pca_data = pca.transform(feature)
+            pca_data = pca.transform([feature])
             return pca_data
+
+        elif algo_choice == 'MOBILENET_false_rmac':
+            base_model = MobileNet(include_top = False, weights ='imagenet', input_shape = (224, 224, 3), pooling = 'avg')
+            base_out = base_model.get_layer('conv_pw_13').output
+            rmac = RMAC(base_out.shape, levels=5, norm_fm=True, sum_fm=True)    
+            rmac_layer = Lambda(rmac.rmac, input_shape=base_model.output_shape, name="rmac_"+'conv_pw_13')
+            out = rmac_layer(base_out)
+            model = Model(base_model.input, out)
+            image = load_img(fileName, target_size=(224, 224))
+            image = img_to_array(image)
+            image = image.reshape((1, image.shape[0], image.shape[1], image.shape[2]))
+            image = preprocess_input(image)
+            feature = model.predict(image)
+            feature = np.array(feature[0])
+            return feature
 
 
 def recherche(mongo, img_path, descriptors, distance_vector, distance_matrix, cfg):
