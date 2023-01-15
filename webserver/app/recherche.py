@@ -379,7 +379,7 @@ def save_metrics(cfg, mongo):
     recall_subclass = []
     precision_subclass = []
 
-    # calculating precision and recall for 50 images
+    # calculating precision and recall
     for i in range(len(revelant_classe)):
         j = i
         val_classe = 0
@@ -402,7 +402,7 @@ def save_metrics(cfg, mongo):
         precision_subclass.append(p_subclass)
 
     # RP Curve for class retrieval
-    plt.plot(recall_class, precision_class)
+    plt.plot(recall_class[:50], precision_class[:50])
     plt.xlabel("Recall")
     plt.ylabel("Precision")
     plt.title("RP curve for class retrieval")
@@ -411,7 +411,7 @@ def save_metrics(cfg, mongo):
     plt.close()
 
     # RP Curve for subclass retrieval
-    plt.plot(recall_subclass, precision_subclass)
+    plt.plot(recall_subclass[:50], precision_subclass[:50])
     plt.xlabel("Recall")
     plt.ylabel("Precision")
     plt.title("RP curve for subclass retrieval")
