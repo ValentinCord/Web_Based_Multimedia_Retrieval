@@ -320,8 +320,14 @@ def save_metrics(cfg, mongo):
     for result in cfg['result']['names']:
         classe = result[0].split('/')[2].split('_')[0]
         subclasse = result[0].split('/')[2].split('_')[1]
-        revelant_classe.append(True) if classe_input == classe else revelant_classe.append(False)
-        revelant_subclasse.append(True) if subclasse_input == subclasse else revelant_subclasse.append(False)
+        if classe_input == classe:
+            revelant_classe.append(True)  
+        else:
+            revelant_classe.append(False)
+        if subclasse_input == subclasse:
+            revelant_subclasse.append(True)  
+        else:
+            revelant_subclasse.append(False)
 
     # number of images in the database for each class and subclass
     num_class = {
@@ -447,22 +453,22 @@ def save_metrics(cfg, mongo):
     data['ap-20']           = round(sum(x for x in precision_subclass[:20])/20, 3)           
     data['ap-50']           = round(sum(x for x in precision_subclass[:50])/50, 3) 
     r_subclass = num_subclass[classe_input][subclasse_input]
-    data['r-precision'] = round(sum(revelant_classe[:r_subclass])/r_subclass, 3)    
+    data['r-precision'] = round(sum(revelant_subclasse[:r_subclass])/r_subclass, 3)    
     data['time']            = cfg['result']['time']
     history.insert_one(data)
 
     # saving query's class metrics in cfg to show result
     data = dict()
-    data['ap-20']        = sum(x for x in precision_class[:20])/20        
-    data['ap-50']        = sum(x for x in precision_class[:50])/50      
+    data['ap-20']        = round(sum(x for x in precision_class[:20])/20, 3)        
+    data['ap-50']        = round(sum(x for x in precision_class[:50])/50, 3)      
     r_class = num_class[classe_input]
     data['r-precision'] = round(sum(revelant_classe[:r_class])/r_class, 3)    
     cfg['metrics']['classe'] = data
     
     # saving query's subclass metrics in cfg to show result
     data = dict()
-    data['ap-20']        = sum(x for x in precision_subclass[:20])/20      
-    data['ap-50']        = sum(x for x in precision_subclass[:50])/50     
+    data['ap-20']        = round(sum(x for x in precision_subclass[:20])/20, 3)      
+    data['ap-50']        = round(sum(x for x in precision_subclass[:50])/50, 3)     
     r_subclass = num_subclass[classe_input][subclasse_input]
-    data['r-precision'] = round(sum(revelant_classe[:r_subclass])/r_subclass, 3)  
+    data['r-precision'] = round(sum(revelant_subclasse[:r_subclass])/r_subclass, 3)  
     cfg['metrics']['subclasse'] = data
